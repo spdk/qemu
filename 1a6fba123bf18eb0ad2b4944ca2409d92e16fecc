@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b64f82d9_dfe908d9",
+        "filename": "configure",
+        "patchSetId": 3
+      },
+      "lineNbr": 1033,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-01T11:14:31Z",
+      "side": 1,
+      "message": "This should be documented in \u0027--help\u0027?\n\nFrom other hand, why setting this optional? Can we depend only on CONFIG_VIRTIO?",
+      "range": {
+        "startLine": 1030,
+        "startChar": 0,
+        "endLine": 1033,
+        "endChar": 47
+      },
+      "revId": "1a6fba123bf18eb0ad2b4944ca2409d92e16fecc",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
