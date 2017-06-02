@@ -22,6 +22,30 @@
       "revId": "1a6fba123bf18eb0ad2b4944ca2409d92e16fecc",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "58a2be23_d91087ae",
+        "filename": "configure",
+        "patchSetId": 3
+      },
+      "lineNbr": 1033,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-06-02T04:28:09Z",
+      "side": 1,
+      "message": "It should only depends on CONFIG_VIRTIO, similar with vhost-user-scsi, maybe I should remove this configuration option, I will upload a new patch to remove this option.",
+      "parentUuid": "b64f82d9_dfe908d9",
+      "range": {
+        "startLine": 1030,
+        "startChar": 0,
+        "endLine": 1033,
+        "endChar": 47
+      },
+      "revId": "1a6fba123bf18eb0ad2b4944ca2409d92e16fecc",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
