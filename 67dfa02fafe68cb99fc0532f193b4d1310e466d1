@@ -71,6 +71,23 @@
     },
     {
       "key": {
+        "uuid": "301080f3_17957d14",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2017-06-06T22:09:59Z",
+      "side": 1,
+      "message": "virtio-blk defines this slightly differently (I don\u0027t know if this is comparable; I am not an expert on QEMU):\n\n  DEFINE_PROP_BIT(\"config-wce\", VirtIOBlock, conf.config_wce, 0, true),\n\nIt also uses some helpers that might be useful here (e.g. DEFINE_BLOCK_PROPERTIES, DEFINE_BLOCK_CHS_PROPERTIES).",
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "68d70e63_393bf1fd",
         "filename": "hw/virtio/virtio-pci.h",
         "patchSetId": 4
