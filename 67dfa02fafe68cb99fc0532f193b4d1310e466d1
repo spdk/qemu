@@ -68,6 +68,40 @@
       "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "68d70e63_393bf1fd",
+        "filename": "hw/virtio/virtio-pci.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2017-06-06T22:02:36Z",
+      "side": 1,
+      "message": "Should this be VHostUserBlkPCI to match the capitalization of VirtIOBlkPCI?",
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a6bdb8d_79d65049",
+        "filename": "hw/virtio/virtio-pci.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2017-06-06T22:02:36Z",
+      "side": 1,
+      "message": "Same here - this seems like it should be Blk instead of BLK.",
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
