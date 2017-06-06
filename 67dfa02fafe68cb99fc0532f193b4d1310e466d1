@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bb2bc0ab_f686856a",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-06T14:50:37Z",
+      "side": 1,
+      "message": "I have trouble in setting blk_size \u003e 512.\nI this is set to eg 4096, I have no IO from guest.",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 60
+      },
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5d605636_a0d1225e",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-06T14:50:37Z",
+      "side": 1,
+      "message": "Why we don\u0027t allow setting those parameters?",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 32
+      },
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "46d6cb27_82b004dd",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-06T14:50:37Z",
+      "side": 1,
+      "message": "Block device topology is ignored if vhost does not set those features during feature negotiation phase, but currently QEMU is handling those features and I think those features should be added to get_features after vhost_get_features() regardless of what vhost reports.",
+      "range": {
+        "startLine": 177,
+        "startChar": 0,
+        "endLine": 180,
+        "endChar": 57
+      },
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
