@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "0bcc824d_f42acce7",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-07T09:07:37Z",
+      "side": 1,
+      "message": "Typo. This whould be \"vhost will not negotiate\".",
+      "parentUuid": "08e59ec6_e751f0fd",
+      "range": {
+        "startLine": 177,
+        "startChar": 0,
+        "endLine": 180,
+        "endChar": 57
+      },
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "301080f3_17957d14",
         "filename": "hw/block/vhost-user-blk.c",
         "patchSetId": 4
