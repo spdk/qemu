@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "30325819_8ae7d4ed",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-06-07T06:55:17Z",
+      "side": 1,
+      "message": "Yeah, I also found this issue with your patch, still under investigation.",
+      "parentUuid": "bb2bc0ab_f686856a",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 60
+      },
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5d605636_a0d1225e",
         "filename": "hw/block/vhost-user-blk.c",
         "patchSetId": 4
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "c9fee40d_b8626dea",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-06-07T06:55:17Z",
+      "side": 1,
+      "message": "I downloaded your patch and printed the feature flags: 0x149000446, bit10 is VIRTIO_BLK_F_TOPOLOGY, so this should work.",
+      "parentUuid": "46d6cb27_82b004dd",
+      "range": {
+        "startLine": 177,
+        "startChar": 0,
+        "endLine": 180,
+        "endChar": 57
+      },
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "301080f3_17957d14",
         "filename": "hw/block/vhost-user-blk.c",
         "patchSetId": 4
@@ -82,6 +130,24 @@
       "writtenOn": "2017-06-06T22:09:59Z",
       "side": 1,
       "message": "virtio-blk defines this slightly differently (I don\u0027t know if this is comparable; I am not an expert on QEMU):\n\n  DEFINE_PROP_BIT(\"config-wce\", VirtIOBlock, conf.config_wce, 0, true),\n\nIt also uses some helpers that might be useful here (e.g. DEFINE_BLOCK_PROPERTIES, DEFINE_BLOCK_CHS_PROPERTIES).",
+      "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e84fd9f_7048f7fb",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 4
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-06-07T06:55:17Z",
+      "side": 1,
+      "message": "I don\u0027t remember why removed BLOCK helper function, I\u0027ll take a look again to see if we can make it more easier.",
+      "parentUuid": "301080f3_17957d14",
       "revId": "67dfa02fafe68cb99fc0532f193b4d1310e466d1",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
