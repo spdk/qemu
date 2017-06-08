@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "452d2bf4_e0844e03",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 5
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-08T08:50:59Z",
+      "side": 1,
+      "message": "Again, why don\u0027t allow to specify this. Kernel make use of them them if they are !\u003d 0.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 32
+      },
+      "revId": "d3795951387a27cd6fb7adb0f82d4582cc1e4e3e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ed539dd9_e9380121",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 5
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-08T08:50:59Z",
+      "side": 1,
+      "message": "We should check blkcfg.seg_max + 2 \u003c 128 (queue depth).",
+      "revId": "d3795951387a27cd6fb7adb0f82d4582cc1e4e3e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1cabc6ee_0f214dfe",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-08T08:50:59Z",
+      "side": 1,
+      "message": "It would be great to have parameter to specify queue depth so we could check if increasing queue depth this will improve performance (in theory it should).",
+      "range": {
+        "startLine": 222,
+        "startChar": 27,
+        "endLine": 222,
+        "endChar": 30
+      },
+      "revId": "d3795951387a27cd6fb7adb0f82d4582cc1e4e3e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
