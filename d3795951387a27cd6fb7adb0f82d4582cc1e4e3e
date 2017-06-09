@@ -102,6 +102,24 @@
     },
     {
       "key": {
+        "uuid": "bb7bd845_2128a4c5",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 5
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-06-09T13:43:42Z",
+      "side": 1,
+      "message": "Queue depth and maximum segment are two different parameters, the Qemu uses 128-2, 128 is not the queue depth, and 2 stands for the extra protocol elements: block request and response.",
+      "parentUuid": "28a25929_2f218469",
+      "revId": "d3795951387a27cd6fb7adb0f82d4582cc1e4e3e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1cabc6ee_0f214dfe",
         "filename": "hw/block/vhost-user-blk.c",
         "patchSetId": 5
