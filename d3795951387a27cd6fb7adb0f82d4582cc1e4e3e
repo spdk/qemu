@@ -84,6 +84,24 @@
     },
     {
       "key": {
+        "uuid": "28a25929_2f218469",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 5
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-06-09T13:26:09Z",
+      "side": 1,
+      "message": "seg_max (as I can understand) is maximum chained descriptors so it must be not greater than queue depth - 2.",
+      "parentUuid": "4b2627b7_62aebe87",
+      "revId": "d3795951387a27cd6fb7adb0f82d4582cc1e4e3e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1cabc6ee_0f214dfe",
         "filename": "hw/block/vhost-user-blk.c",
         "patchSetId": 5
