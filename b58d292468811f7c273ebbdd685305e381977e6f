@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e926200e_f34203cd",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1011256
+      },
+      "writtenOn": "2017-07-24T09:15:15Z",
+      "side": 1,
+      "message": "Why do we need all features enabled by default? Shouldn\u0027t they be enabled when they\u0027re explicitly needed?",
+      "range": {
+        "startLine": 313,
+        "startChar": 0,
+        "endLine": 336,
+        "endChar": 53
+      },
+      "revId": "b58d292468811f7c273ebbdd685305e381977e6f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
