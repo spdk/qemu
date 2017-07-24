@@ -38,6 +38,10 @@ static const int user_feature_bits[] = {
     VIRTIO_BLK_F_TOPOLOGY,
     VIRTIO_BLK_F_SCSI,
     VIRTIO_BLK_F_MQ,
+    VIRTIO_BLK_F_RO,
+    VIRTIO_BLK_F_FLUSH,
+    VIRTIO_BLK_F_BARRIER,
+    VIRTIO_BLK_F_CONFIG_WCE,
     VIRTIO_F_VERSION_1,
     VIRTIO_RING_F_INDIRECT_DESC,
     VIRTIO_RING_F_EVENT_IDX,
@@ -195,10 +199,8 @@ static uint64_t vhost_user_blk_get_features(VirtIODevice *vdev,
     VHostUserBlk *s = VHOST_USER_BLK(vdev);
     uint64_t get_features;
 
-    virtio_add_feature(&features, VIRTIO_BLK_F_SIZE_MAX);
-    virtio_add_feature(&features, VIRTIO_BLK_F_SEG_MAX);
-    virtio_add_feature(&features, VIRTIO_BLK_F_TOPOLOGY);
-    virtio_add_feature(&features, VIRTIO_BLK_F_BLK_SIZE);
+    /* Turn on pre-defined host features */
+    features |= s->host_features;
 
     get_features = vhost_get_features(&s->dev, user_feature_bits, features);
 
@@ -308,6 +310,30 @@ static Property vhost_user_blk_properties[] = {
                        131072),
     DEFINE_PROP_UINT32("max_segment_num", VHostUserBlk, max_segment_num, 34),
     DEFINE_PROP_BIT("config_wce", VHostUserBlk, config_wce, 0, false),
+    DEFINE_PROP_BIT64("f_size_max", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_SIZE_MAX, true),
+    DEFINE_PROP_BIT64("f_sizemax", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_SIZE_MAX, true),
+    DEFINE_PROP_BIT64("f_segmax", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_SEG_MAX, true),
+    DEFINE_PROP_BIT64("f_geometry", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_GEOMETRY, true),
+    DEFINE_PROP_BIT64("f_readonly", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_RO, true),
+    DEFINE_PROP_BIT64("f_blocksize", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_BLK_SIZE, true),
+    DEFINE_PROP_BIT64("f_topology", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_TOPOLOGY, true),
+    DEFINE_PROP_BIT64("f_multiqueue", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_MQ, true),
+    DEFINE_PROP_BIT64("f_flush", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_FLUSH, true),
+    DEFINE_PROP_BIT64("f_barrier", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_BARRIER, true),
+    DEFINE_PROP_BIT64("f_scsi", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_SCSI, true),
+    DEFINE_PROP_BIT64("f_writecache", VHostUserBlk, host_features,
+                      VIRTIO_BLK_F_CONFIG_WCE, true),
     DEFINE_PROP_END_OF_LIST(),
 };
 
