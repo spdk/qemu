@@ -22,6 +22,30 @@
       "revId": "b58d292468811f7c273ebbdd685305e381977e6f",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1c2edfd8_44881be3",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-07-24T09:26:17Z",
+      "side": 1,
+      "message": "For those features SPDK does not support, vhost library will unmask them after call get_features from SPDK. But if we set them disabled by default, it will have no chance to be enabled unless started with feature flag.",
+      "parentUuid": "e926200e_f34203cd",
+      "range": {
+        "startLine": 313,
+        "startChar": 0,
+        "endLine": 336,
+        "endChar": 53
+      },
+      "revId": "b58d292468811f7c273ebbdd685305e381977e6f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
