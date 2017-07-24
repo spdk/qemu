@@ -31,6 +31,7 @@ typedef struct VHostUserBlk {
     CharBackend chardev;
     Error *migration_blocker;
     int32_t bootindex;
+    uint64_t host_features;
     BlockConf blkcfg;
     uint64_t capacity;
     char *size;
