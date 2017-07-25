@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "570617a3_363d8e6b",
+        "filename": "hw/block/vhost-user-blk.c",
+        "patchSetId": 3
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1011256
+      },
+      "writtenOn": "2017-07-25T09:09:20Z",
+      "side": 1,
+      "message": "Actually I do have to apologize and say that (at least in case of RO) default value should be \"true\". I didn\u0027t fully understand the idea  before, and I though we would have to explicitly disable RO option for every VM started.\n\nIn patch set 3 when vhost controller has \"ReadOnly yes\" I also have to manually specify RO flag.\nIn patch set 2 - I do not need to add \"f_readonly\" option explicitly, and this is fine. Disk in VM is visible as RO\u003d1.",
+      "range": {
+        "startLine": 322,
+        "startChar": 39,
+        "endLine": 322,
+        "endChar": 44
+      },
+      "revId": "e865ff65a73341b8b6c51b4171810a31a8dc3ca8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
