@@ -216,11 +216,11 @@ static void vhost_user_blk_device_realize(DeviceState *dev, Error **errp)
 {
     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
     VHostUserBlk *s = VHOST_USER_BLK(vdev);
-    int ret;
+    int i, ret;
     uint64_t size;
 
     if (!s->chardev.chr) {
-        error_setg(errp, "vhost-user-blk: chardev is mandatary");
+        error_setg(errp, "vhost-user-blk: chardev is mandatory");
         return;
     }
 
@@ -254,7 +254,9 @@ static void vhost_user_blk_device_realize(DeviceState *dev, Error **errp)
 
     virtio_init(vdev, "virtio-blk", VIRTIO_ID_BLOCK,
                 sizeof(struct virtio_blk_config));
-    virtio_add_queue(vdev, s->queue_size, vhost_user_blk_handle_output);
+    for (i = 0; i < s->num_queues; i++) {
+        virtio_add_queue(vdev, s->queue_size, vhost_user_blk_handle_output);
+    }
 
     s->dev.nvqs = s->num_queues;
     s->dev.vqs = g_new(struct vhost_virtqueue, s->dev.nvqs);
@@ -266,8 +268,14 @@ static void vhost_user_blk_device_realize(DeviceState *dev, Error **errp)
     if (ret < 0) {
         error_setg(errp, "vhost-user-blk: vhost initialization failed: %s",
                    strerror(-ret));
-        return;
+        goto err;
     }
+
+    return;
+
+err:
+    g_free(s->dev.vqs);
+    virtio_cleanup(vdev);
 }
 
 static void vhost_user_blk_device_unrealize(DeviceState *dev, Error **errp)
