@@ -93,6 +93,30 @@
       "revId": "5a6e08abcf4849e232c2e12713cc9ee6283c74eb",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "28164f51_07d8bddd",
+        "filename": "contrib/vhost-user-blk/vhost-user-blk.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-11-06T19:28:46Z",
+      "side": 1,
+      "message": "I mean that if unix_fn point to existing file it will remove this file. In SPDK we decided that if file exist we unlink only if it is a socket. But if vhost-user-scsi is written this way so it is fine for me too.",
+      "parentUuid": "ba9f0f03_51ac61f9",
+      "range": {
+        "startLine": 537,
+        "startChar": 4,
+        "endLine": 537,
+        "endChar": 26
+      },
+      "revId": "5a6e08abcf4849e232c2e12713cc9ee6283c74eb",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
