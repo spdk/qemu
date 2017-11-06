@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "08b4b0fa_fc91a02e",
+        "filename": "contrib/vhost-user-blk/vhost-user-blk.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-11-06T17:55:55Z",
+      "side": 1,
+      "message": "Sure.",
+      "parentUuid": "9213fdb0_2162a0fd",
+      "range": {
+        "startLine": 296,
+        "startChar": 73,
+        "endLine": 296,
+        "endChar": 74
+      },
+      "revId": "5a6e08abcf4849e232c2e12713cc9ee6283c74eb",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "44559c45_7f07fc34",
         "filename": "contrib/vhost-user-blk/vhost-user-blk.c",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-11-03T08:35:22Z",
       "side": 1,
       "message": "I think you can remove arbitrary file here.",
+      "range": {
+        "startLine": 537,
+        "startChar": 4,
+        "endLine": 537,
+        "endChar": 26
+      },
+      "revId": "5a6e08abcf4849e232c2e12713cc9ee6283c74eb",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba9f0f03_51ac61f9",
+        "filename": "contrib/vhost-user-blk/vhost-user-blk.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-11-06T17:55:55Z",
+      "side": 1,
+      "message": "Can you give an explanation here? I copied the code from vhost-user-scsi sample.",
+      "parentUuid": "44559c45_7f07fc34",
       "range": {
         "startLine": 537,
         "startChar": 4,
