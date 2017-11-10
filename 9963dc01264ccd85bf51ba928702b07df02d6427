@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "93fd16d5_b9016cdc",
+        "filename": "docs/interop/vhost-user.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 626,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-11-10T16:16:01Z",
+      "side": 1,
+      "message": "Yes, CONFIG_WCE of virtio_blk is a perfect example.",
+      "parentUuid": "16fa2ed0_a1828544",
+      "range": {
+        "startLine": 624,
+        "startChar": 6,
+        "endLine": 626,
+        "endChar": 30
+      },
+      "revId": "9963dc01264ccd85bf51ba928702b07df02d6427",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dcc1bf24_b3add9e9",
         "filename": "docs/interop/vhost-user.txt",
         "patchSetId": 3
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "Yest I know how this is woking but just want to simplify this a little bit. Can we just send message from vhost without singaling event fd first?",
       "parentUuid": "7b5f26e9_dba313b6",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 636,
+        "endChar": 78
+      },
+      "revId": "9963dc01264ccd85bf51ba928702b07df02d6427",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f13c1fcc_03b4b89b",
+        "filename": "docs/interop/vhost-user.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 636,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2017-11-10T16:16:01Z",
+      "side": 1,
+      "message": "No, SPDK vhost target is in slave mode, this does not work now.",
+      "parentUuid": "7418e62d_aa218c54",
       "range": {
         "startLine": 628,
         "startChar": 0,
