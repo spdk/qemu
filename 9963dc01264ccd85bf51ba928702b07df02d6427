@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63dda42d_7dbb3668",
+        "filename": "docs/interop/vhost-user.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 626,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-11-10T11:56:43Z",
+      "side": 1,
+      "message": "In theory look good but what if vhost can\u0027t accept passed configuration? How to deal with this?",
+      "range": {
+        "startLine": 624,
+        "startChar": 6,
+        "endLine": 626,
+        "endChar": 30
+      },
+      "revId": "9963dc01264ccd85bf51ba928702b07df02d6427",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dcc1bf24_b3add9e9",
+        "filename": "docs/interop/vhost-user.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 636,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2017-11-10T11:56:43Z",
+      "side": 1,
+      "message": "Do we need this descriptor? Why VHOST_USER_GET_CONFIG is not sufficient? vhost can just send this message when config changed and QEMU will receive it and update is content.",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 636,
+        "endChar": 78
+      },
+      "revId": "9963dc01264ccd85bf51ba928702b07df02d6427",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
