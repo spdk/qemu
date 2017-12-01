@@ -1,0 +1,7 @@
+Code-Review+2: Daniel Verkamp <daniel.verkamp@intel.com>
+Verified+1: Daniel Verkamp <daniel.verkamp@intel.com>
+Submitted-by: Daniel Verkamp <daniel.verkamp@intel.com>
+Submitted-at: Fri, 01 Dec 2017 16:33:09 -0500
+Reviewed-on: https://review.gerrithub.io/385308
+Project: spdk/qemu
+Branch: refs/heads/spdk
