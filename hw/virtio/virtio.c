@@ -1826,6 +1826,23 @@ void virtio_save(VirtIODevice *vdev, QEMUFile *f)
     uint32_t guest_features_lo = (vdev->guest_features & 0xffffffff);
     int i;
 
+    error_report("virtio_save start");
+
+    for (i = 0; i < VIRTIO_QUEUE_MAX; i++) {
+	    if (vdev->vq[i].vring.num == 0)
+	       break;
+
+	      uint16_t inuse =  (uint16_t)(vdev->vq[i].last_avail_idx -
+			    vdev->vq[i].used_idx);
+
+	       error_report("virtio_save VQ %d size %d last_avail_idx %d - "
+		       "used_idx %d, (inuse = %d vdev->vq[i].inuse = %d)",
+		       i, vdev->vq[i].vring.num,
+			vdev->vq[i].last_avail_idx,
+			vdev->vq[i].used_idx, inuse,
+			  vdev->vq[i].inuse);
+    }
+
     if (k->save_config) {
         k->save_config(qbus->parent, f);
     }
@@ -2082,14 +2099,12 @@ int virtio_load(VirtIODevice *vdev, QEMUFile *f, int version_id)
              */
             vdev->vq[i].inuse = (uint16_t)(vdev->vq[i].last_avail_idx -
                                 vdev->vq[i].used_idx);
-            if (vdev->vq[i].inuse > vdev->vq[i].vring.num) {
-                error_report("VQ %d size 0x%x < last_avail_idx 0x%x - "
-                             "used_idx 0x%x",
-                             i, vdev->vq[i].vring.num,
-                             vdev->vq[i].last_avail_idx,
-                             vdev->vq[i].used_idx);
-                return -1;
-            }
+
+            error_report("load_save VQ %d size %d last_avail_idx %d - "
+        		 "used_idx %d, (vdev->vq[i].inuse = %d)",
+         		 i, vdev->vq[i].vring.num, vdev->vq[i].last_avail_idx,
+         		 vdev->vq[i].used_idx, vdev->vq[i].inuse);
+
         }
     }
     rcu_read_unlock();
