@@ -18,6 +18,10 @@
 #include "qemu/error-report.h"
 #include "qemu/sockets.h"
 
+#include "hw/block/block.h"
+#include "include/block/nvme.h"
+#include "hw/block/vhost_user_nvme.h"
+
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -72,6 +76,11 @@ typedef enum VhostUserRequest {
     VHOST_USER_SET_VRING_ENDIAN = 23,
     VHOST_USER_GET_CONFIG = 24,
     VHOST_USER_SET_CONFIG = 25,
+    VHOST_USER_NVME_ADMIN = 80,
+    VHOST_USER_NVME_SET_CQ_CALL = 81,
+    VHOST_USER_NVME_GET_CAP = 82,
+    VHOST_USER_NVME_START_STOP = 83,
+    VHOST_USER_NVME_IO_CMD = 84,
     VHOST_USER_MAX
 } VhostUserRequest;
 
@@ -107,6 +116,17 @@ typedef struct VhostUserConfig {
     uint8_t region[VHOST_USER_MAX_CONFIG_SIZE];
 } VhostUserConfig;
 
+enum VhostUserNvmeQueueTypes {
+    VHOST_USER_NVME_SUBMISSION_QUEUE = 1,
+    VHOST_USER_NVME_COMPLETION_QUEUE = 2,
+};
+
+typedef struct VhostUserNvmeIO {
+    enum VhostUserNvmeQueueTypes queue_type;
+    uint32_t qid;
+    uint32_t tail_head;
+} VhostUserNvmeIO;
+
 static VhostUserConfig c __attribute__ ((unused));
 #define VHOST_USER_CONFIG_HDR_SIZE (sizeof(c.offset) \
                                    + sizeof(c.size) \
@@ -130,6 +150,14 @@ typedef union {
         struct vhost_vring_addr addr;
         VhostUserMemory memory;
         VhostUserLog log;
+        struct nvme {
+            union {
+                NvmeCmd req;
+                NvmeCqe cqe;
+            } cmd;
+            uint8_t buf[4096];
+        } nvme;
+        VhostUserNvmeIO nvme_io;
         struct vhost_iotlb_msg iotlb;
         VhostUserConfig config;
 } VhostUserPayload;
@@ -1083,3 +1111,169 @@ const VhostOps user_ops = {
         .vhost_get_config = vhost_user_get_config,
         .vhost_set_config = vhost_user_set_config,
 };
+
+int
+vhost_user_nvme_get_cap(struct vhost_dev *dev, uint64_t *cap)
+{
+    return vhost_user_get_u64(dev, VHOST_USER_NVME_GET_CAP, cap);
+}
+
+int vhost_dev_nvme_start(struct vhost_dev *dev, VirtIODevice *vdev)
+{
+    int r = 0;
+
+    if (vdev != NULL) {
+        return -1;
+    }
+    r = dev->vhost_ops->vhost_set_mem_table(dev, dev->mem);
+    if (r < 0) {
+        error_report("SET MEMTABLE Failed");
+        return -1;
+    }
+
+    vhost_user_set_u64(dev, VHOST_USER_NVME_START_STOP, 1);
+
+    return 0;
+}
+
+int vhost_dev_nvme_stop(struct vhost_dev *dev)
+{
+    return vhost_user_set_u64(dev, VHOST_USER_NVME_START_STOP, 0);
+}
+
+int
+vhost_user_nvme_io_cmd_pass(struct vhost_dev *dev, uint16_t qid,
+                            uint16_t tail_head, bool submission_queue)
+{
+    VhostUserMsg msg = {
+        .hdr.request = VHOST_USER_NVME_IO_CMD,
+        .hdr.flags = VHOST_USER_VERSION,
+        .hdr.size = sizeof(VhostUserNvmeIO),
+    };
+
+    if (submission_queue) {
+        msg.payload.nvme_io.queue_type = VHOST_USER_NVME_SUBMISSION_QUEUE;
+    } else {
+        msg.payload.nvme_io.queue_type = VHOST_USER_NVME_COMPLETION_QUEUE;
+    }
+    msg.payload.nvme_io.qid = qid;
+    msg.payload.nvme_io.tail_head = tail_head;
+
+    if (vhost_user_write(dev, &msg, NULL, 0) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/* reply required for all the messages */
+int
+vhost_user_nvme_admin_cmd_raw(struct vhost_dev *dev, NvmeCmd *cmd,
+                              void *buf, uint32_t len)
+{
+    VhostUserMsg msg = {
+        .hdr.request = VHOST_USER_NVME_ADMIN,
+        .hdr.flags = VHOST_USER_VERSION,
+    };
+    uint16_t status;
+
+    msg.hdr.size = sizeof(*cmd);
+    memcpy(&msg.payload.nvme.cmd.req, cmd, sizeof(*cmd));
+
+    if (vhost_user_write(dev, &msg, NULL, 0) < 0) {
+        return -1;
+    }
+
+    if (vhost_user_read(dev, &msg) < 0) {
+        return -1;
+    }
+
+    if (msg.hdr.request != VHOST_USER_NVME_ADMIN) {
+        error_report("Received unexpected msg type. Expected %d received %d",
+                     VHOST_USER_NVME_ADMIN, msg.hdr.request);
+        return -1;
+    }
+
+    switch (cmd->opcode) {
+    case NVME_ADM_CMD_DELETE_SQ :
+    case NVME_ADM_CMD_CREATE_SQ :
+    case NVME_ADM_CMD_DELETE_CQ :
+    case NVME_ADM_CMD_CREATE_CQ :
+    case NVME_ADM_CMD_DB_BUFFER_CFG :
+        if (msg.hdr.size != sizeof(NvmeCqe)) {
+            error_report("Received unexpected rsp message. %u received %u",
+                         cmd->opcode, msg.hdr.size);
+        }
+        status = msg.payload.nvme.cmd.cqe.status;
+        if (nvme_cpl_is_error(status)) {
+            error_report("Nvme Admin Command Status Faild");
+            return -1;
+        }
+        memcpy(buf, &msg.payload.nvme.cmd.cqe, len);
+    break;
+    case NVME_ADM_CMD_IDENTIFY :
+    case NVME_ADM_CMD_GET_FEATURES :
+    case NVME_ADM_CMD_SET_FEATURES :
+        if (msg.hdr.size != sizeof(NvmeCqe) + 4096) {
+            error_report("Received unexpected rsp message. %u received %u",
+                         cmd->opcode, msg.hdr.size);
+        }
+        status = msg.payload.nvme.cmd.cqe.status;
+        if (nvme_cpl_is_error(status)) {
+            error_report("Nvme Admin Command Status Faild");
+            return -1;
+        }
+        memcpy(buf, &msg.payload.nvme.buf, len);
+    break;
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+static int vhost_user_nvme_set_vring_call(struct vhost_dev *dev,
+                                     struct vhost_vring_file *file)
+{
+    return vhost_set_vring_file(dev, VHOST_USER_NVME_SET_CQ_CALL, file);
+}
+
+static int vhost_user_nvme_init(struct vhost_dev *dev, void *opaque)
+{
+    struct vhost_user *u;
+
+    assert(dev->vhost_ops->backend_type == VHOST_BACKEND_TYPE_USER);
+
+    u = g_new0(struct vhost_user, 1);
+    u->chr = opaque;
+    dev->opaque = u;
+
+    return 0;
+}
+
+const VhostOps user_nvme_ops = {
+        .backend_type = VHOST_BACKEND_TYPE_USER,
+        .vhost_backend_init = vhost_user_nvme_init,
+        .vhost_backend_cleanup = vhost_user_cleanup,
+        .vhost_backend_memslots_limit = vhost_user_memslots_limit,
+        .vhost_set_mem_table = vhost_user_set_mem_table,
+        .vhost_set_vring_call = vhost_user_nvme_set_vring_call,
+        .vhost_backend_can_merge = vhost_user_can_merge,
+};
+
+int vhost_dev_nvme_set_backend_type(struct vhost_dev *dev,
+                                    VhostBackendType backend_type)
+{
+    int r = 0;
+
+    switch (backend_type) {
+    case VHOST_BACKEND_TYPE_USER :
+        dev->vhost_ops = &user_nvme_ops;
+        break;
+    default:
+        error_report("Unknown vhost backend type");
+        r = -1;
+    }
+
+    return r;
+}
