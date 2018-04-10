@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b4ba1370_7662a01a",
+        "filename": "hw/block/vhost.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-10T17:24:03Z",
+      "side": 1,
+      "message": "This looks like a copy of hw/virtio/vhost.c - why can\u0027t we use the other version? Is it modified?",
+      "revId": "f60c37c5c869ffbb1229d6aa8f9eef592209906d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "87281f25_e7f7cf4e",
+        "filename": "hw/block/vhost_user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-10T17:24:03Z",
+      "side": 1,
+      "message": "Same with this file - is this the same as hw/virtio/vhost-user.c? Can it share some parts instead of duplicating them?",
+      "revId": "f60c37c5c869ffbb1229d6aa8f9eef592209906d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
