@@ -33,6 +33,24 @@
       "revId": "f60c37c5c869ffbb1229d6aa8f9eef592209906d",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6ef1f34f_1d0b9099",
+        "filename": "hw/block/vhost_user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-11T01:40:07Z",
+      "side": 1,
+      "message": "I made some changes based on hw/virtio/vhost-user.c, but not too much. For the first stage, the QEMU vhost framework may change frequently, so with this copy here, we don\u0027t need a lot rebase work when switching to a new QEMU version. But, yes, for next step, e.g.: upsteaming the patch to QEMU community, this patch need to be revised to eliminate duplicated code.",
+      "parentUuid": "87281f25_e7f7cf4e",
+      "revId": "f60c37c5c869ffbb1229d6aa8f9eef592209906d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
