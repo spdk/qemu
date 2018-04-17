@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da54a4a1_c494debe",
+        "filename": "hw/block/nvme.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2018-04-17T13:59:50Z",
+      "side": 1,
+      "message": "You can squash this condition to more readable and safe form\n(((status) \u0026 (0x01fe | 0x0e00)) !\u003d 0)",
+      "range": {
+        "startLine": 50,
+        "startChar": 8,
+        "endLine": 50,
+        "endChar": 62
+      },
+      "revId": "1caf23fc0fe78159816a94bcb43f8a390e971e22",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e3eedc84_08261ac5",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1011230
+      },
+      "writtenOn": "2018-04-17T13:59:50Z",
+      "side": 1,
+      "message": "This looks odd.",
+      "range": {
+        "startLine": 45,
+        "startChar": 22,
+        "endLine": 45,
+        "endChar": 24
+      },
+      "revId": "1caf23fc0fe78159816a94bcb43f8a390e971e22",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
