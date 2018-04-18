@@ -93,6 +93,30 @@
       "revId": "1caf23fc0fe78159816a94bcb43f8a390e971e22",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ae5a765b_8f854c06",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1011222
+      },
+      "writtenOn": "2018-04-18T22:38:06Z",
+      "side": 1,
+      "message": "It looks odd but I think it\u0027s OK.  It\u0027s just due to NVMe zero-based nomenclature.\n\nIt could do for (qid \u003d 0; qid \u003c num_io_queues; qid++)\nand then add 1 to the qid, but this way is fine with me too.",
+      "parentUuid": "60cf14a9_c81d411a",
+      "range": {
+        "startLine": 45,
+        "startChar": 22,
+        "endLine": 45,
+        "endChar": 24
+      },
+      "revId": "1caf23fc0fe78159816a94bcb43f8a390e971e22",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
