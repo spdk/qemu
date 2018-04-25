@@ -2,6 +2,9 @@
 #define HW_NVME_H
 #include "qemu/cutils.h"
 #include "block/nvme.h"
+#include "hw/virtio/vhost.h"
+#include "sysemu/hostmem.h"
+#include "chardev/char-fe.h"
 
 typedef struct NvmeAsyncEvent {
     QSIMPLEQ_ENTRY(NvmeAsyncEvent) entry;
@@ -35,6 +38,18 @@ typedef struct NvmeSQueue {
     QTAILQ_ENTRY(NvmeSQueue) entry;
 } NvmeSQueue;
 
+typedef struct NvmeStatus {
+    uint16_t p:1;     /* phase tag */
+    uint16_t sc:8;    /* status code */
+    uint16_t sct:3;   /* status code type */
+    uint16_t rsvd2:2;
+    uint16_t m:1;     /* more */
+    uint16_t dnr:1;   /* do not retry */
+} NvmeStatus;
+
+#define nvme_cpl_is_error(status) \
+        (((status & 0x01fe) != 0) || ((status & 0x0e00) != 0))
+
 typedef struct NvmeCQueue {
     struct NvmeCtrl *ctrl;
     uint8_t     phase;
@@ -42,9 +57,11 @@ typedef struct NvmeCQueue {
     uint16_t    irq_enabled;
     uint32_t    head;
     uint32_t    tail;
+    int32_t     virq;
     uint32_t    vector;
     uint32_t    size;
     uint64_t    dma_addr;
+    EventNotifier guest_notifier;
     QEMUTimer   *timer;
     QTAILQ_HEAD(sq_list, NvmeSQueue) sq_list;
     QTAILQ_HEAD(cq_req_list, NvmeRequest) req_list;
@@ -58,12 +75,27 @@ typedef struct NvmeNamespace {
 #define NVME(obj) \
         OBJECT_CHECK(NvmeCtrl, (obj), TYPE_NVME)
 
+#define TYPE_VHOST_NVME "vhost-user-nvme"
+#define NVME_VHOST(obj) \
+        OBJECT_CHECK(NvmeCtrl, (obj), TYPE_VHOST_NVME)
+
 typedef struct NvmeCtrl {
     PCIDevice    parent_obj;
     MemoryRegion iomem;
     MemoryRegion ctrl_mem;
     NvmeBar      bar;
+    void         *shadow_bar;
+    int          shadow_bar_fd;
+    uint32_t     shadow_bar_size;
+    volatile uint32_t *shadow_db;
     BlockConf    conf;
+
+    int32_t    bootindex;
+    CharBackend chardev;
+    struct vhost_dev dev;
+    uint32_t    num_io_queues;
+    bool        dataplane_started;
+    bool        vector_poll_started;
 
     uint32_t    page_size;
     uint16_t    page_bits;
