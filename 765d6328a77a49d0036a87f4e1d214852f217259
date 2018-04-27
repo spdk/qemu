@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "54d3a07a_e747ce2f",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "Definitely we should do like you mentioned, for this patch, the Admin queue is in QEMU, so only mandatory Admin commands are routed to slave target, for next step, I\u0027m thinking move the Admin queue into slave target too, then for this QEMU driver, we don\u0027t need to have so many duplicated code from QEMU nvme driver.  For now I tested the performance vs. vhost-scsi/blk, vhost-nvme showed better performance, so we have achieved our purpose for the first step, then we should refactor the code for upsteaming it to QEMU community.",
+      "parentUuid": "6817e297_6cc556f2",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "79304dd8_3ca39f20",
         "filename": "hw/block/vhost_user_nvme.c",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-04-27T00:56:04Z",
       "side": 1,
       "message": "This looks a leftover printf that should be converted to the proper QEMU debug logs or removed. (There\u0027s another one below.)",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "391c8f38_4fbd9a49",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "Yeah, should use QEMU API, fprintf may break QEMU monitor output.",
+      "parentUuid": "79304dd8_3ca39f20",
       "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
@@ -144,6 +180,30 @@
     },
     {
       "key": {
+        "uuid": "bdc6fda9_7eaea14b",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 818,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "yes, the casting is not necessary, I copied it from QEMU nvme driver.",
+      "parentUuid": "c0494937_f3d2cfc4",
+      "range": {
+        "startLine": 818,
+        "startChar": 44,
+        "endLine": 818,
+        "endChar": 56
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "967a9ac3_d13fa87b",
         "filename": "hw/block/vhost_user_nvme.c",
         "patchSetId": 1
@@ -155,6 +215,24 @@
       "writtenOn": "2018-04-27T00:56:04Z",
       "side": 1,
       "message": "Comment formatting is off here (add a space before the closing */).",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4b35f213_d102b728",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 871,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "967a9ac3_d13fa87b",
       "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
@@ -218,6 +296,24 @@
     },
     {
       "key": {
+        "uuid": "cc786889_2f8b453f",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 989,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "The original QEMU driver do it like this, this isn\u0027t mandatory.",
+      "parentUuid": "d598d330_7440beb4",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86a68887_7b684070",
         "filename": "hw/virtio/vhost-user.c",
         "patchSetId": 1
@@ -229,6 +325,30 @@
       "writtenOn": "2018-04-27T00:56:04Z",
       "side": 1,
       "message": "This initialization seems pointless - it\u0027s always overwritten below.",
+      "range": {
+        "startLine": 1652,
+        "startChar": 9,
+        "endLine": 1652,
+        "endChar": 13
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d0c4152d_08cf6c21",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1652,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "will remove it.",
+      "parentUuid": "86a68887_7b684070",
       "range": {
         "startLine": 1652,
         "startChar": 9,
@@ -258,6 +378,24 @@
     },
     {
       "key": {
+        "uuid": "13ab0796_4e6a2f94",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1673,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "ok.",
+      "parentUuid": "ee9787fe_2bdadeab",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c97889d8_a4e76e95",
         "filename": "hw/virtio/vhost-user.c",
         "patchSetId": 1
@@ -275,6 +413,24 @@
     },
     {
       "key": {
+        "uuid": "cc6bfa18_5c1f0886",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1727,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "New QEMU code style rule changed, `checkpatch.pl` requires a space before colon.",
+      "parentUuid": "c97889d8_a4e76e95",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ad3a20a6_d2f3e393",
         "filename": "hw/virtio/vhost-user.c",
         "patchSetId": 1
@@ -286,6 +442,30 @@
       "writtenOn": "2018-04-27T00:56:04Z",
       "side": 1,
       "message": "Hard-coding the size of the response to 4096 byte seems wrong (at least for Get Features).  Can we make this more flexible?",
+      "range": {
+        "startLine": 1746,
+        "startChar": 46,
+        "endLine": 1746,
+        "endChar": 50
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3f884a92_c0e98c2d",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1746,
+      "author": {
+        "id": 1011204
+      },
+      "writtenOn": "2018-04-27T01:55:54Z",
+      "side": 1,
+      "message": "At first hardcoded length makes the implementation more easy, variable length makes sense now.",
+      "parentUuid": "ad3a20a6_d2f3e393",
       "range": {
         "startLine": 1746,
         "startChar": 46,
