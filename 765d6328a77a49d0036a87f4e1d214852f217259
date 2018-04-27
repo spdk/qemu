@@ -1,0 +1,334 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6817e297_6cc556f2",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Can we just pass all Get Feature commands through to the backend instead of just this specific feature?  Otherwise, it looks like we\u0027ll need special handling for each feature to keep the backend and QEMU state in sync.\n\nThe same general comment applies for all admin commands - it would be nice if the QEMU side did not have any emulation at all and just passed everything through to the vhost backend. (Maybe there are a few that need special handling on the QEMU side, but I don\u0027t think Get Features does.)",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "79304dd8_3ca39f20",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "This looks a leftover printf that should be converted to the proper QEMU debug logs or removed. (There\u0027s another one below.)",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4fa62411_2c98a515",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 589,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Do we need to do something with cqe after this? It\u0027s just stored in a local variable and then discarded.\n\nWe probably need to pass in the cqe pointer from nvme_admin_cmd() like the other cases.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b105c25b_8043f6b0",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 661,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Another printf that should be removed or converted to a proper QEMU log.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "96d4bd72_8b2e3f10",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 694,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "More leftover prints.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aee8fcdc_544bff5b",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 755,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "This doesn\u0027t look like it\u0027s indented correctly.  Please run QEMU\u0027s checkpatch.pl.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93d3ac3c_d7d0f895",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 788,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "nvme_mmio_read() is missing some checks from the upstream QEMU hw/block/nvme.c version - can we sync up with that again? (Ideally we would just extend nvme.c instead of duplicating most of it...)",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c0494937_f3d2cfc4",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 818,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "This (void *) cast shouldn\u0027t be necessary - is it casting away some qualifier?",
+      "range": {
+        "startLine": 818,
+        "startChar": 44,
+        "endLine": 818,
+        "endChar": 56
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "967a9ac3_d13fa87b",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 871,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Comment formatting is off here (add a space before the closing */).",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d6954c22_d070291b",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 934,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Another suspicious (void *) cast here.",
+      "range": {
+        "startLine": 934,
+        "startChar": 37,
+        "endLine": 934,
+        "endChar": 45
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6dd5c112_20709394",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "More leftover prints.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d598d330_7440beb4",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 989,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Is there any reason we need to cache the Identify Namespace data at startup? Can we just pass the Identify command through to the vhost user backend?",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "86a68887_7b684070",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1652,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "This initialization seems pointless - it\u0027s always overwritten below.",
+      "range": {
+        "startLine": 1652,
+        "startChar": 9,
+        "endLine": 1652,
+        "endChar": 13
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ee9787fe_2bdadeab",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1673,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "The rest of this file seems to have the return type and function name on the same line - we should be consistent with that.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c97889d8_a4e76e95",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1727,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Strange spacing on this and the rest of the case statements in this file - please remove the space before the colon.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ad3a20a6_d2f3e393",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1746,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Hard-coding the size of the response to 4096 byte seems wrong (at least for Get Features).  Can we make this more flexible?",
+      "range": {
+        "startLine": 1746,
+        "startChar": 46,
+        "endLine": 1746,
+        "endChar": 50
+      },
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa54a64b_7442c790",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1783,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "This can probably be static.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9b2e67bf_db4acfb7",
+        "filename": "hw/virtio/vhost-user.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1784,
+      "author": {
+        "id": 1010525
+      },
+      "writtenOn": "2018-04-27T00:56:04Z",
+      "side": 1,
+      "message": "Indentation looks off here.",
+      "revId": "765d6328a77a49d0036a87f4e1d214852f217259",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
