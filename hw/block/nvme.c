@@ -73,6 +73,29 @@
  * Note that when a CMB is requested the NVMe version is set to 1.2,
  * for all other cases it is set to 1.1.
  *
+ *
+ * Advanced options for OpenChannel:
+ *  lver=<int>         : version of the LightNVM standard to use (0 - disabled, 1 - 1.2 standard, 2 - 2.0 standard), Default:2
+ *  lsecs_per_pg=<int> : Number of sectors in a flash page. Default: 1
+ *  lpgs_per_blk=<int> : Number of pages per flash block. Default: 256
+ *  lmax_sec_per_rq=<int> : Maximum number of sectors per I/O request. Default: 64
+ *  lnum_ch=<int>      : Number of controller channels. Default: 1
+ *  lnum_lun=<int>     : Number of LUNs per channel, Default:1
+ *  lnum_pln=<int>     : Number of flash planes per LUN. Supported single (1),
+ *  dual (2) and quad (4) plane modes. Defult: 1
+ *  lblks_per_pln      : Number of blocks per plane. Default: 1
+ *  lreadl2ptbl=<int>  : Load logical to physical table. 1: yes, 0: no. Default: 1
+ *  lmetadata=<file>   : Load metadata from file destination
+ *
+ * Advanced options for OpenChannel error injection:
+ *  lb_err_write       : Write error frequency in sectors. Default: 0 (disabled)
+ *  ln_err_write       : Number of ppas affected by write error injection
+ *  lb_err_erase       : Erase error frequency in sectors. Default: 0 (disabled)
+ *  ln_err_erase       : Number of ppas affected by erase error injection
+ *  lb_err_read        : Read error frequency in sectors. Default: 0 (disabled)
+ *  ln_err_read        : Number of ppas affected by read error injection
+ *  laer_thread_sleep  : AER thread injecting relocate event every X miliseconds; default: 0 (disabled)
+ *
  */
 
 #include "qemu/osdep.h"
@@ -91,6 +114,7 @@
 #include "qemu/cutils.h"
 #include "trace.h"
 #include "nvme.h"
+#include "nvme_lnvm_helpers.h"
 
 #define NVME_GUEST_ERR(trace, fmt, ...) \
     do { \
@@ -417,6 +441,10 @@ static void nvme_post_cqe(NvmeCQueue *cq, NvmeRequest *req)
                               n->cqe_size);
     }
 
+    if (lnvm_dev(n)) {
+        lnvm_post_cqe(n, req);
+    }
+
     cqe->status = cpu_to_le16((req->status << 1) | phase);
     cqe->sq_id = cpu_to_le16(sq->sqid);
     cqe->sq_head = cpu_to_le16(sq->head);
@@ -713,6 +741,25 @@ static uint16_t nvme_io_cmd(NvmeCtrl *n, NvmeCmd *cmd, NvmeRequest *req)
     }
 
     ns = &n->namespaces[nsid - 1];
+
+    if (lnvm_dev(n)) {
+        switch (cmd->opcode) {
+        case LNVM_CMD_VEC_WRITE:
+        case LNVM_CMD_VEC_READ:
+            return lnvm_rwc(n, ns, cmd, req, true);
+        case LNVM_CMD_VEC_COPY:
+            return lnvm_rwc(n, ns, cmd, req, true);
+        case LNVM_CMD_VEC_ERASE:
+            return lnvm_vector_erase(n, ns, cmd, req);
+        case NVME_CMD_READ:
+        case NVME_CMD_WRITE:
+             return lnvm_rwc(n, ns, cmd, req, false);
+        case NVME_CMD_DSM:
+             return lnvm_dsm(n, ns, cmd, req);
+        default:
+             return NVME_INVALID_OPCODE | NVME_DNR;
+        }
+    }
 
     switch (cmd->opcode) {
     case NVME_CMD_FLUSH:
@@ -1102,6 +1149,11 @@ static uint16_t nvme_get_feature(NvmeCtrl *n, NvmeCmd *cmd, NvmeRequest *req)
     case NVME_SOFTWARE_PROGRESS_MARKER:
         req->cqe.result = cpu_to_le32(n->features.sw_prog_marker);
         break;
+    case LNVM_MEDIA_FEEDBACK:
+        if (lnvm_dev(n)) {
+            req->cqe.result = cpu_to_le32(*(uint32_t *)&n->lnvm_ctrl.features);
+            break;
+        }
     default:
         return NVME_INVALID_FIELD | NVME_DNR;
     }
@@ -1172,6 +1224,11 @@ static uint16_t nvme_set_feature(NvmeCtrl *n, NvmeCmd *cmd, NvmeRequest *req)
     case NVME_SOFTWARE_PROGRESS_MARKER:
         n->features.sw_prog_marker = dw11;
         break;
+    case LNVM_MEDIA_FEEDBACK:
+        if (lnvm_dev(n)) {
+            *(uint32_t *)&n->lnvm_ctrl.features = dw11;
+            break;
+        }
     default:
         return NVME_INVALID_FIELD | NVME_DNR;
     }
@@ -1259,6 +1316,14 @@ static uint16_t nvme_get_log(NvmeCtrl *n, NvmeCmd *cmd, NvmeRequest *req)
         return nvme_smart_info(n, cmd, len);
     case NVME_LOG_FW_SLOT_INFO:
         return nvme_fw_log_info(n, cmd, len);
+    case LNVM_LOG_CHUNK_NOTIFICATION:
+        if (lnvm_dev(n)) {
+            return lnvm_chnks_notification(n, cmd, len);
+        }
+    case LNVM_LOG_CHUNK_REPORT:
+        if (lnvm_dev(n)) {
+            return lnvm_chnks_report(n, cmd);
+        }
     default:
         return NVME_INVALID_LOG_ID | NVME_DNR;
     }
@@ -1433,6 +1498,11 @@ static uint16_t nvme_format_namespace(NvmeNamespace *ns, uint8_t lba_idx,
     }
 
     nvme_ns_data_save(ns->ctrl);
+
+    if (lnvm_dev(ns->ctrl)) {
+        return lnvm_init_meta(ns->ctrl) ? NVME_INTERNAL_DEV_ERROR : NVME_SUCCESS;
+    }
+
     return NVME_SUCCESS;
 }
 
@@ -1545,6 +1615,10 @@ static uint16_t nvme_admin_cmd(NvmeCtrl *n, NvmeCmd *cmd, NvmeRequest *req)
         return nvme_format(n, cmd);
     case NVME_ADM_CMD_SET_DB_MEMORY:
         return nvme_set_db_memory(n, cmd);
+    case LNVM_ADM_DEVICE_GEOMETRY:
+        if (lnvm_dev(n)){
+            return lnvm_identify(n, cmd);
+        }
     case NVME_ADM_CMD_ACTIVATE_FW:
     case NVME_ADM_CMD_DOWNLOAD_FW:
     case NVME_ADM_CMD_SECURITY_SEND:
@@ -2072,6 +2146,10 @@ static void nvme_init_namespaces(NvmeCtrl *n)
         id_ns->dpc = n->dpc;
         id_ns->dps = n->dps;
 
+        if (lnvm_dev(n)) {
+            id_ns->vs[0] = 0x1;
+        }
+
         // Initialize id_ns->lbaf with the proto values and zero out the rest of entries
         memcpy(&id_ns->lbaf[0], g_proto_lbaf, sizeof(g_proto_lbaf));
         memset(&id_ns->lbaf[0] + sizeof(g_proto_lbaf), 0,
@@ -2239,6 +2317,9 @@ static void nvme_realize(PCIDevice *pci_dev, Error **errp)
     nvme_init_pci(n);
     nvme_init_ctrl(n);
     nvme_init_namespaces(n);
+
+    if (lnvm_dev(n) && lnvm_init(n))
+        error_setg(errp, "could not init lnvm subsystem");
 }
 
 static void nvme_exit(PCIDevice *pci_dev)
@@ -2257,6 +2338,10 @@ static void nvme_exit(PCIDevice *pci_dev)
     memory_region_unref(&n->iomem);
     if (n->cmbsz) {
         memory_region_unref(&n->ctrl_mem);
+    }
+
+    if (lnvm_dev(n)) {
+        lnvm_exit(n);
     }
 
     qemu_mutex_destroy(&n->enq_evt_mutex);
@@ -2298,6 +2383,22 @@ static Property nvme_props[] = {
     DEFINE_PROP_UINT16("vid", NvmeCtrl, vid, 0x1d1d),
     DEFINE_PROP_UINT16("did", NvmeCtrl, did, 0x1f1f),
     DEFINE_PROP_STRING("nsdatafile", NvmeCtrl, ns_data_fname),
+    DEFINE_PROP_UINT8("lver", NvmeCtrl, lnvm_ctrl.id_ctrl.ver_id, 2),
+    DEFINE_PROP_UINT8("lsecs_per_pg", NvmeCtrl, lnvm_ctrl.params.sec_per_pg, 1),
+    DEFINE_PROP_UINT16("lpgs_per_blk", NvmeCtrl, lnvm_ctrl.params.pgs_per_blk, 256),
+    DEFINE_PROP_UINT8("lmax_sec_per_rq", NvmeCtrl, lnvm_ctrl.params.max_sec_per_rq, 64),
+    DEFINE_PROP_UINT8("lnum_ch", NvmeCtrl, lnvm_ctrl.params.num_ch, 1),
+    DEFINE_PROP_UINT8("lnum_lun", NvmeCtrl, lnvm_ctrl.params.num_lun, 1),
+    DEFINE_PROP_UINT8("lnum_pln", NvmeCtrl, lnvm_ctrl.params.num_pln, 1),
+    DEFINE_PROP_UINT16("lblks_per_pln", NvmeCtrl, lnvm_ctrl.params.blks_per_pln, 1),
+    DEFINE_PROP_STRING("lmetadata", NvmeCtrl, lnvm_ctrl.meta_fname),
+    DEFINE_PROP_UINT32("lb_err_write", NvmeCtrl, lnvm_ctrl.err_write.err_freq, 0),
+    DEFINE_PROP_UINT32("ln_err_write", NvmeCtrl, lnvm_ctrl.err_write.n_err, 0),
+    DEFINE_PROP_UINT32("lb_err_erase", NvmeCtrl, lnvm_ctrl.err_erase.err_freq, 0),
+    DEFINE_PROP_UINT32("ln_err_erase", NvmeCtrl, lnvm_ctrl.err_erase.n_err, 0),
+    DEFINE_PROP_UINT32("lb_err_read", NvmeCtrl, lnvm_ctrl.err_read.err_freq, 0),
+    DEFINE_PROP_UINT32("ln_err_read", NvmeCtrl, lnvm_ctrl.err_read.n_err, 0),
+    DEFINE_PROP_UINT32("laer_thread_sleep", NvmeCtrl, lnvm_ctrl.params.aer_thread_sleep, 0),
     DEFINE_PROP_END_OF_LIST(),
 };
 
