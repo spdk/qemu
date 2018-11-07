@@ -2,6 +2,7 @@
 #define HW_NVME_H
 #include "block/nvme.h"
 #include "qemu/cutils.h"
+#include "nvme_lnvm_structs.h"
 
 typedef struct NvmeAsyncEvent {
     QSIMPLEQ_ENTRY(NvmeAsyncEvent) entry;
@@ -179,6 +180,8 @@ typedef struct NvmeCtrl {
 
     uint64_t    db_addr;
     uint64_t    eventidx_addr;
+
+    LnvmCtrl    lnvm_ctrl;
 } NvmeCtrl;
 
 typedef struct NvmeDifTuple {
@@ -187,4 +190,19 @@ typedef struct NvmeDifTuple {
     uint32_t ref_tag;
 } NvmeDifTuple;
 
+static int nvme_qemu_fls(int i);
+static void nvme_set_error_page(NvmeCtrl *n, uint16_t sqid, uint16_t cid,
+                                uint16_t status, uint16_t location, uint64_t lba, uint32_t nsid);
+static void nvme_rw_cb(void *opaque, int ret);
+static void nvme_addr_write(NvmeCtrl *n, hwaddr addr, void *buf, int size);
+static void nvme_addr_read(NvmeCtrl *n, hwaddr addr, void *buf, int size);
+static uint16_t nvme_map_prp(QEMUSGList *qsg, QEMUIOVector *iov,
+                             uint64_t prp1, uint64_t prp2, uint32_t len, NvmeCtrl *n);
+static uint16_t nvme_dma_write_prp(NvmeCtrl *n, uint8_t *ptr, uint32_t len,
+                                   uint64_t prp1, uint64_t prp2);
+static uint16_t nvme_dma_read_prp(NvmeCtrl *n, uint8_t *ptr, uint32_t len,
+                                  uint64_t prp1, uint64_t prp2);
+static void nvme_enqueue_event(NvmeCtrl *n, uint8_t event_type,
+                               uint8_t event_info, uint8_t log_page);
+static void nvme_enqueue_req_completion(NvmeCQueue *cq, NvmeRequest *req);
 #endif /* HW_NVME_H */
