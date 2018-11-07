@@ -238,6 +238,7 @@ enum NvmeAdminCommands {
     NVME_ADM_CMD_FORMAT_NVM     = 0x80,
     NVME_ADM_CMD_SECURITY_SEND  = 0x81,
     NVME_ADM_CMD_SECURITY_RECV  = 0x82,
+    NVME_ADM_CMD_SET_DB_MEMORY  = 0x7C,
 };
 
 enum NvmeIoCommands {
@@ -457,6 +458,7 @@ enum NvmeStatusCodes {
     NVME_E2E_REF_ERROR          = 0x0284,
     NVME_CMP_FAILURE            = 0x0285,
     NVME_ACCESS_DENIED          = 0x0286,
+    NVME_DULB_ERROR             = 0x0287,
     NVME_MORE                   = 0x2000,
     NVME_DNR                    = 0x4000,
     NVME_NO_COMPLETE            = 0xffff,
@@ -474,6 +476,24 @@ typedef struct NvmeFwSlotInfoLog {
     uint8_t     frs7[8];
     uint8_t     reserved2[448];
 } NvmeFwSlotInfoLog;
+
+typedef struct NvmeGetLogPage {
+    uint8_t opcode;
+    uint8_t flags;
+    uint16_t cid;
+    uint32_t nsid;
+    uint64_t rsvd1[2];
+    uint64_t prp1;
+    uint64_t prp2;
+    uint8_t  lid;
+    uint8_t  rsvd10;
+    uint16_t numdl;
+    uint16_t numdu;
+    uint16_t rsvd11;
+    uint32_t lpol;
+    uint32_t lpou;
+    uint32_t rsvd14[2];
+} NvmeGetLogPage;
 
 typedef struct NvmeErrorLog {
     uint64_t    error_count;
@@ -572,6 +592,7 @@ enum NvmeIdCtrlOacs {
     NVME_OACS_SECURITY  = 1 << 0,
     NVME_OACS_FORMAT    = 1 << 1,
     NVME_OACS_FW        = 1 << 2,
+    NVME_OACS_DBBUF_SUPP = 1 << 8,
 };
 
 enum NvmeIdCtrlOncs {
@@ -715,5 +736,6 @@ static inline void _nvme_check_size(void)
     QEMU_BUILD_BUG_ON(sizeof(NvmeSmartLog) != 512);
     QEMU_BUILD_BUG_ON(sizeof(NvmeIdCtrl) != 4096);
     QEMU_BUILD_BUG_ON(sizeof(NvmeIdNs) != 4096);
+    QEMU_BUILD_BUG_ON(sizeof(NvmeGetLogPage) != 64);
 }
 #endif
