@@ -220,6 +220,66 @@ static void vhost_user_blk_handle_output(VirtIODevice *vdev, VirtQueue *vq)
 
 }
 
+
+static gboolean vhost_user_blk_watch(GIOChannel *chan, GIOCondition cond,
+        void *opaque);
+
+static int vhost_user_blk_reconnect(VHostUserBlk *s)
+{
+    int ret, i;
+
+    ret = vhost_dev_reconnect(&s->dev, s->vhost_user, 0);
+    if (ret != 0) {
+        error_report("vhost_dev_reconnect failed");
+        return ret;
+    }
+    ret = vhost_dev_restart(&s->dev, &s->parent_obj);
+    if (ret != 0) {
+        error_report("vhost_dev_restart failed");
+        return ret;
+    }
+    for (i = 0; i < s->dev.nvqs; i++) {
+        vhost_virtqueue_mask(&s->dev, &s->parent_obj, i, false);
+    }
+
+    return 0;
+}
+
+static void vhost_user_blk_event(void *opaque, int event)
+{
+    VHostUserBlk *s = opaque;
+
+    switch (event) {
+    case CHR_EVENT_OPENED:
+        s->watch = qemu_chr_fe_add_watch(&s->chardev, G_IO_HUP, vhost_user_blk_watch, s);
+        qemu_chr_fe_set_handlers(&s->chardev, NULL, NULL, NULL, NULL, NULL, NULL, false);
+        vhost_user_blk_reconnect(s);
+        break;
+    case CHR_EVENT_CLOSED:
+	if (s->watch) {
+            g_source_remove(s->watch);
+            s->watch = 0;
+        }
+        break;
+    default:
+        error_report("unkown event:%d\n", event);
+        break;
+    }
+
+    return ;
+}
+static gboolean vhost_user_blk_watch(GIOChannel *chan, GIOCondition cond,
+        void *opaque)
+{
+     VHostUserBlk *s = opaque;
+
+     g_source_remove(s->watch);
+     qemu_chr_fe_set_handlers(&s->chardev, NULL, NULL, vhost_user_blk_event, NULL, s, NULL, false);
+
+     return TRUE;
+}
+
+
 static void vhost_user_blk_device_realize(DeviceState *dev, Error **errp)
 {
     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
@@ -266,6 +326,8 @@ static void vhost_user_blk_device_realize(DeviceState *dev, Error **errp)
 
     vhost_dev_set_config_notifier(&s->dev, &blk_ops);
 
+    s->watch = qemu_chr_fe_add_watch(&s->chardev, G_IO_HUP, vhost_user_blk_watch, s);
+
     ret = vhost_dev_init(&s->dev, s->vhost_user, VHOST_BACKEND_TYPE_USER, 0);
     if (ret < 0) {
         error_setg(errp, "vhost-user-blk: vhost initialization failed: %s",
@@ -302,6 +364,8 @@ static void vhost_user_blk_device_unrealize(DeviceState *dev, Error **errp)
     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
     VHostUserBlk *s = VHOST_USER_BLK(dev);
 
+    if (s->watch > 0)
+        g_source_remove(s->watch);
     vhost_user_blk_set_status(vdev, 0);
     vhost_dev_cleanup(&s->dev);
     g_free(s->dev.vqs);
@@ -320,6 +384,7 @@ static void vhost_user_blk_instance_init(Object *obj)
 
     device_add_bootindex_property(obj, &s->bootindex, "bootindex",
                                   "/disk@0,0", DEVICE(obj), NULL);
+    s->watch = 0;
 }
 
 static const VMStateDescription vmstate_vhost_user_blk = {

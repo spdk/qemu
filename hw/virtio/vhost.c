@@ -29,6 +29,8 @@
 #include "sysemu/dma.h"
 #include "trace.h"
 
+#include <sys/shm.h>
+
 /* enabled until disconnected backend stabilizes */
 #define _VHOST_DEBUG 1
 
@@ -47,6 +49,105 @@ static struct vhost_log *vhost_log_shm;
 static unsigned int used_memslots;
 static QLIST_HEAD(, vhost_dev) vhost_devices =
     QLIST_HEAD_INITIALIZER(vhost_devices);
+
+#define SHM_PAGE_SIZE 4096
+
+struct vhost_recovery_shm {
+    key_t shm_key;
+    int   shm_id;
+    int   shm_vq;
+    int   shm_magic;
+    void  *shm_addr;
+};
+
+static struct vhost_recovery_shm *vhost_recovery_shm_pool = NULL;
+static int vhost_recovery_shm_size = 0;
+
+static int vhost_recovery_shm_init(int vq_size)
+{
+    if (vq_size <= 0)
+       return 0;
+
+    vhost_recovery_shm_pool = g_malloc0(sizeof (struct vhost_recovery_shm) * vq_size);
+    if (vhost_recovery_shm_pool == NULL) {
+        error_report("g_malloc0() vhost_recover_shm failed");
+        return -1;
+    }
+
+    vhost_recovery_shm_size = vq_size;
+
+    return 0;
+}
+
+static int vhost_recovery_shm_destory(void)
+{
+    if (vhost_recovery_shm_pool != NULL) {
+        g_free(vhost_recovery_shm_pool);
+        vhost_recovery_shm_pool = NULL;
+    }
+
+    vhost_recovery_shm_size = 0;
+
+    return 0;
+}
+
+static int vhost_recovery_shm_vq_init(int vq)
+{
+    struct vhost_recovery_shm * shm;
+    char path[128];
+
+    if (vq >= vhost_recovery_shm_size)
+	return -1;
+
+    shm = &vhost_recovery_shm_pool[vq];
+
+    snprintf(path, sizeof(path), "/proc/%d", getpid());
+
+    shm->shm_key = ftok(path, vq);
+    shm->shm_id = shmget(shm->shm_key, SHM_PAGE_SIZE, 666 | IPC_CREAT );
+    if (shm->shm_id == -1)
+    {
+        error_report("shmget() failed:%s", strerror(errno));
+        return -1;
+    }
+    shm->shm_addr = shmat(shm->shm_id, 0, 0);
+    if (shm->shm_addr == (void *)-1)
+    {
+        error_report("shmat() failed\n");
+        return -1;
+    }
+
+    memset(shm->shm_addr, 0, SHM_PAGE_SIZE);
+
+    return 0;
+}
+
+static struct vhost_recovery_shm* vhost_recovery_shm_vq_get(int vq)
+{
+    if (vq >= vhost_recovery_shm_size)
+	    return NULL;
+
+    return &vhost_recovery_shm_pool[vq];
+}
+
+static int vhost_recovery_shm_vq_destory(int vq)
+{
+    struct vhost_recovery_shm * shm;
+
+    if (vq >= vhost_recovery_shm_size)
+	    return -1;
+
+    shm = &vhost_recovery_shm_pool[vq];
+
+    if (shm->shm_addr)
+        shmdt(shm->shm_addr);
+    if (shm->shm_id)
+        shmctl(shm->shm_id, IPC_RMID, 0);
+
+    return 0;
+}
+
+#undef SHM_PAGE_SIZE
 
 bool vhost_has_free_slot(void)
 {
@@ -716,12 +817,14 @@ static int vhost_virtqueue_set_addr(struct vhost_dev *dev,
                                     struct vhost_virtqueue *vq,
                                     unsigned idx, bool enable_log)
 {
+    struct vhost_recovery_shm *shm = vhost_recovery_shm_vq_get(idx-dev->vq_index);
     struct vhost_vring_addr addr = {
         .index = idx,
         .desc_user_addr = (uint64_t)(unsigned long)vq->desc,
         .avail_user_addr = (uint64_t)(unsigned long)vq->avail,
         .used_user_addr = (uint64_t)(unsigned long)vq->used,
         .log_guest_addr = vq->used_phys,
+        .recovery_shm_key = shm->shm_key,
         .flags = enable_log ? (1 << VHOST_VRING_F_LOG) : 0,
     };
     int r = dev->vhost_ops->vhost_set_vring_addr(dev, &addr);
@@ -1214,6 +1317,17 @@ int vhost_dev_init(struct vhost_dev *hdev, void *opaque,
         }
     }
 
+    if (vhost_recovery_shm_init(hdev->nvqs) == -1) {
+        goto fail;
+    }
+
+    for (i = 0; i < hdev->nvqs; ++i) {
+        r = vhost_recovery_shm_vq_init(i);
+        if (r < 0) {
+            goto fail;
+        }
+    }
+
     if (busyloop_timeout) {
         for (i = 0; i < hdev->nvqs; ++i) {
             r = vhost_virtqueue_set_busyloop_timeout(hdev, hdev->vq_index + i,
@@ -1298,13 +1412,135 @@ fail:
     return r;
 }
 
+int vhost_dev_reconnect(struct vhost_dev *hdev, void *opaque, uint32_t busyloop_timeout)
+{
+    uint64_t features;
+    int i, r, log_size, n_initialized_vqs = 0;
+    Error *local_err = NULL;
+
+    hdev->vdev = NULL;
+    hdev->migration_blocker = NULL;
+
+    r = hdev->vhost_ops->vhost_backend_cleanup(hdev);
+    if (r < 0) {
+        goto fail;
+    }
+
+    r = hdev->vhost_ops->vhost_backend_init(hdev, opaque);
+    if (r < 0) {
+        goto fail;
+    }
+
+    r = hdev->vhost_ops->vhost_set_owner(hdev);
+    if (r < 0) {
+        VHOST_OPS_DEBUG("vhost_set_owner failed");
+        goto fail;
+    }
+
+    r = hdev->vhost_ops->vhost_get_features(hdev, &features);
+    if (r < 0) {
+        VHOST_OPS_DEBUG("vhost_get_features failed");
+        goto fail;
+    }
+
+    for (i = 0; i < hdev->nvqs; ++i) {
+        vhost_virtqueue_cleanup(hdev->vqs + i);
+    }
+
+    for (i = 0; i < hdev->nvqs; ++i, ++n_initialized_vqs) {
+        r = vhost_virtqueue_init(hdev, hdev->vqs + i, hdev->vq_index + i);
+        if (r < 0) {
+            goto fail;
+        }
+    }
+
+    if (busyloop_timeout) {
+        for (i = 0; i < hdev->nvqs; ++i) {
+            r = vhost_virtqueue_set_busyloop_timeout(hdev, hdev->vq_index + i,
+                                                     busyloop_timeout);
+            if (r < 0) {
+                goto fail_busyloop;
+            }
+        }
+    }
+
+    hdev->features = features;
+
+    if (hdev->migration_blocker == NULL) {
+        if (!(hdev->features & (0x1ULL << VHOST_F_LOG_ALL))) {
+            error_setg(&hdev->migration_blocker,
+                       "Migration disabled: vhost lacks VHOST_F_LOG_ALL feature.");
+        } else if (vhost_dev_log_is_shared(hdev) && !qemu_memfd_check()) {
+            error_setg(&hdev->migration_blocker,
+                       "Migration disabled: failed to allocate shared memory");
+        }
+    }
+
+    if (hdev->migration_blocker != NULL) {
+        r = migrate_add_blocker(hdev->migration_blocker, &local_err);
+        if (local_err) {
+            error_report_err(local_err);
+            error_free(hdev->migration_blocker);
+            goto fail_busyloop;
+        }
+    }
+
+    if (!hdev->log_enabled) {
+        r = hdev->vhost_ops->vhost_set_mem_table(hdev, hdev->mem);
+        if (r < 0) {
+            VHOST_OPS_DEBUG("vhost_set_mem_table failed");
+        }
+    } else {
+        log_size = vhost_get_log_size(hdev);
+        /* We allocate an extra 4K bytes to log,
+         * to reduce the * number of reallocations. */
+#define VHOST_LOG_BUFFER2 (0x1000 / sizeof *hdev->log)
+        /* To log more, must increase log size before table update. */
+        if (hdev->log_size < log_size) {
+            vhost_dev_log_resize(hdev, log_size + VHOST_LOG_BUFFER2);
+        }
+        r = hdev->vhost_ops->vhost_set_mem_table(hdev, hdev->mem);
+        if (r < 0) {
+            VHOST_OPS_DEBUG("vhost_set_mem_table failed");
+        }
+        /* To log less, can only decrease log size after table update. */
+        if (hdev->log_size > log_size + VHOST_LOG_BUFFER2) {
+            vhost_dev_log_resize(hdev, log_size);
+        }
+    }
+
+    if (used_memslots > hdev->vhost_ops->vhost_backend_memslots_limit(hdev)) {
+        error_report("vhost backend memory slots limit is less"
+                " than current number of present memory slots");
+        r = -1;
+        if (busyloop_timeout) {
+            goto fail_busyloop;
+        } else {
+            goto fail;
+        }
+    }
+
+    return 0;
+
+fail_busyloop:
+    while (--i >= 0) {
+        vhost_virtqueue_set_busyloop_timeout(hdev, hdev->vq_index + i, 0);
+    }
+fail:
+    hdev->nvqs = n_initialized_vqs;
+    vhost_dev_cleanup(hdev);
+    return r;
+}
+
 void vhost_dev_cleanup(struct vhost_dev *hdev)
 {
     int i;
 
     for (i = 0; i < hdev->nvqs; ++i) {
         vhost_virtqueue_cleanup(hdev->vqs + i);
+        vhost_recovery_shm_vq_destory(i);
     }
+    vhost_recovery_shm_destory();
     if (hdev->mem) {
         /* those are only safe after successful init */
         memory_listener_unregister(&hdev->memory_listener);
@@ -1507,6 +1743,91 @@ int vhost_dev_start(struct vhost_dev *hdev, VirtIODevice *vdev)
         r = -errno;
         goto fail_mem;
     }
+    for (i = 0; i < hdev->nvqs; ++i) {
+        r = vhost_virtqueue_start(hdev,
+                                  vdev,
+                                  hdev->vqs + i,
+                                  hdev->vq_index + i);
+        if (r < 0) {
+            goto fail_vq;
+        }
+    }
+
+    if (hdev->log_enabled) {
+        uint64_t log_base;
+
+        hdev->log_size = vhost_get_log_size(hdev);
+        hdev->log = vhost_log_get(hdev->log_size,
+                                  vhost_dev_log_is_shared(hdev));
+        log_base = (uintptr_t)hdev->log->log;
+        r = hdev->vhost_ops->vhost_set_log_base(hdev,
+                                                hdev->log_size ? log_base : 0,
+                                                hdev->log);
+        if (r < 0) {
+            VHOST_OPS_DEBUG("vhost_set_log_base failed");
+            r = -errno;
+            goto fail_log;
+        }
+    }
+
+    if (vhost_dev_has_iommu(hdev)) {
+        hdev->vhost_ops->vhost_set_iotlb_callback(hdev, true);
+
+        /* Update used ring information for IOTLB to work correctly,
+         * vhost-kernel code requires for this.*/
+        for (i = 0; i < hdev->nvqs; ++i) {
+            struct vhost_virtqueue *vq = hdev->vqs + i;
+            vhost_device_iotlb_miss(hdev, vq->used_phys, true);
+        }
+    }
+    return 0;
+fail_log:
+    vhost_log_put(hdev, false);
+fail_vq:
+    while (--i >= 0) {
+        vhost_virtqueue_stop(hdev,
+                             vdev,
+                             hdev->vqs + i,
+                             hdev->vq_index + i);
+    }
+    i = hdev->nvqs;
+
+fail_mem:
+fail_features:
+
+    hdev->started = false;
+    return r;
+}
+
+int vhost_dev_restart(struct vhost_dev *hdev, VirtIODevice *vdev)
+{
+    int i, r;
+
+    /* should only be called after backend is connected */
+    assert(hdev->vhost_ops);
+
+    hdev->started = true;
+    hdev->vdev = vdev;
+
+    r = vhost_dev_set_features(hdev, hdev->log_enabled);
+    if (r < 0) {
+        goto fail_features;
+    }
+    r = hdev->vhost_ops->vhost_set_mem_table(hdev, hdev->mem);
+    if (r < 0) {
+        VHOST_OPS_DEBUG("vhost_set_mem_table failed");
+        r = -errno;
+        goto fail_mem;
+    }
+
+    i = hdev->nvqs;
+    while (--i >= 0) {
+        vhost_virtqueue_stop(hdev,
+                             vdev,
+                             hdev->vqs + i,
+                             hdev->vq_index + i);
+    }
+
     for (i = 0; i < hdev->nvqs; ++i) {
         r = vhost_virtqueue_start(hdev,
                                   vdev,
