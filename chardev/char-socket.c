@@ -1008,8 +1008,6 @@ static void qmp_chardev_open_socket(Chardev *chr,
         s->reconnect_time = reconnect;
     }
 
-    /* If reconnect_time is set, will do that in chr_machine_done. */
-    if (!s->reconnect_time) {
         if (s->is_listen) {
             char *name;
             s->listener = qio_net_listener_new();
@@ -1039,9 +1037,12 @@ static void qmp_chardev_open_socket(Chardev *chr,
                                                       chr->gcontext);
             }
         } else if (qemu_chr_wait_connected(chr, errp) < 0) {
-            goto error;
+            if (s->reconnect_time) {
+                tcp_chr_connect_async(chr);
+            } else {
+                goto error;
+            }
         }
-    }
 
     return;
 
@@ -1161,10 +1162,6 @@ char_socket_get_connected(Object *obj, Error **errp)
 static int tcp_chr_machine_done_hook(Chardev *chr)
 {
     SocketChardev *s = SOCKET_CHARDEV(chr);
-
-    if (s->reconnect_time) {
-        tcp_chr_connect_async(chr);
-    }
 
     if (s->ioc && s->tls_creds) {
         tcp_chr_tls_init(chr);
