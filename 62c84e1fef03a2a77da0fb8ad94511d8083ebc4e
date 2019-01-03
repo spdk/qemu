@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "25f3e37a_bca6abe3",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1977,
+      "author": {
+        "id": 1011221
+      },
+      "writtenOn": "2019-01-03T08:15:13Z",
+      "side": 1,
+      "message": "Is the nsdata file required even for typical NVMe drives ? It might be best to keep configuration for non-OC devices without any changes.\nBenefit is that any QEMU 3.0 configuration previously working, will work with those changes applied.",
+      "range": {
+        "startLine": 1977,
+        "startChar": 44,
+        "endLine": 1977,
+        "endChar": 63
+      },
+      "revId": "62c84e1fef03a2a77da0fb8ad94511d8083ebc4e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
