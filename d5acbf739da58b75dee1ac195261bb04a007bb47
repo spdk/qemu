@@ -22,6 +22,30 @@
       "revId": "d5acbf739da58b75dee1ac195261bb04a007bb47",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb06fa71_f7f04418",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-01-03T15:51:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d1f96b7_6e17b81c",
+      "range": {
+        "startLine": 78,
+        "startChar": 117,
+        "endLine": 78,
+        "endChar": 126
+      },
+      "revId": "d5acbf739da58b75dee1ac195261bb04a007bb47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
