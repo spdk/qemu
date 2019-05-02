@@ -1284,9 +1284,9 @@ static int lnvm_init(NvmeCtrl *n)
         ln->id_ctrl.geo.sos = lnvm_ns_get_meta_size(ns);
         memset(&ln->id_ctrl.geo.resv, 0, sizeof(uint8_t) * 44);
 
-        ln->id_ctrl.wrt.mw_min = ln->params.sec_per_pg;
-        ln->id_ctrl.wrt.mw_opt = ln->params.sec_per_pg * ln->params.num_pln;
-        ln->id_ctrl.wrt.mw_cunits = ln->params.sec_per_pg * ln->params.num_pln;
+        ln->id_ctrl.wrt.mw_min = ln->params.sec_per_pg * ln->params.ws_factor;
+        ln->id_ctrl.wrt.mw_opt = ln->id_ctrl.wrt.mw_min * ln->params.num_pln;
+        ln->id_ctrl.wrt.mw_cunits = ln->id_ctrl.wrt.mw_opt * ln->params.cu_factor;
         memset(&ln->id_ctrl.wrt.resv[0], 0, sizeof(uint8_t) * 52);
 
         ln->id_ctrl.perf.trdt = 1000;

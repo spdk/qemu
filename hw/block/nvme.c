@@ -2561,6 +2561,8 @@ static Property nvme_props[] = {
     DEFINE_PROP_UINT32("lb_err_read", NvmeCtrl, lnvm_ctrl.err_read.err_freq, 0),
     DEFINE_PROP_UINT32("ln_err_read", NvmeCtrl, lnvm_ctrl.err_read.n_err, 0),
     DEFINE_PROP_UINT32("laer_thread_sleep", NvmeCtrl, lnvm_ctrl.params.aer_thread_sleep, 0),
+    DEFINE_PROP_UINT32("lws_factor", NvmeCtrl, lnvm_ctrl.params.ws_factor, 1),
+    DEFINE_PROP_UINT32("lcu_factor", NvmeCtrl, lnvm_ctrl.params.cu_factor, 1),
     DEFINE_PROP_END_OF_LIST(),
 };
 
