@@ -243,6 +243,8 @@ typedef struct LnvmParams {
     uint8_t     num_ch;
     uint8_t     num_pln;
     uint8_t     num_lun;
+    uint32_t    ws_factor;
+    uint32_t    cu_factor;
     /* calculated values */
     uint32_t    ppa_secs_per_pl;
     uint32_t    ppa_secs_per_pg;
