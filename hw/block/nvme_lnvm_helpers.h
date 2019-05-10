@@ -150,7 +150,7 @@ static int lnvm_meta_state_get(NvmeNamespace *ns, uint64_t ppa,
                                LnvmMetaState *state, void *user_meta)
 {
     LnvmCtrl *ln = &ns->ctrl->lnvm_ctrl;
-    FILE *meta_fp = ln->metadata_fp;
+    FILE *meta_fp = ns->ctrl->metadata_fp;
     size_t tgt_oob_len = lnvm_ns_get_meta_size(ns);
     size_t int_oob_len = sizeof(LnvmInternalMeta);
     size_t meta_len = tgt_oob_len + int_oob_len;
@@ -193,7 +193,7 @@ static int lnvm_meta_state_get(NvmeNamespace *ns, uint64_t ppa,
 static int lnvm_meta_state_set(NvmeNamespace *ns, uint64_t ppa,
                                LnvmMetaState state, void *user_meta)
 {
-    FILE *meta_fp = ns->ctrl->lnvm_ctrl.metadata_fp;
+    FILE *meta_fp = ns->ctrl->metadata_fp;
     size_t tgt_oob_len = lnvm_ns_get_meta_size(ns);
     size_t int_oob_len = sizeof(LnvmInternalMeta);
     size_t meta_len = tgt_oob_len + int_oob_len;
@@ -1059,6 +1059,17 @@ static void lnvm_init_id_ppaf(LnvmCtrl *ln)
                        ln->ppaf.ch_offset;
 }
 
+static size_t lnvm_get_meta_per_sector(NvmeCtrl *n)
+{
+    return sizeof(LnvmInternalMeta) + lnvm_ns_get_meta_size(
+                                       &n->namespaces[0]);
+}
+
+static size_t lnvm_get_total_meta_size(NvmeCtrl *n)
+{
+    return lnvm_get_meta_per_sector(n) * n->lnvm_ctrl.params.ppa_secs_total;
+}
+
 static int lnvm_init_meta(NvmeCtrl *n)
 {
     // The code as is won't work with multiple namespaces. Since it's unusual
@@ -1072,54 +1083,11 @@ static int lnvm_init_meta(NvmeCtrl *n)
     // - internal meta (erased/written state managed by qemu)
     // - user-accesible meta (size defined by the active LBA format)
     LnvmCtrl *ln = &n->lnvm_ctrl;
-    const size_t meta_per_sector = sizeof(LnvmInternalMeta) + lnvm_ns_get_meta_size(
-                                       &n->namespaces[0]);
-    size_t total_meta_bytes = meta_per_sector * ln->params.ppa_secs_total;
-
-    if (ln->metadata_fp) {
-        printf("nvme: lnvm_init_meta: file already opened (reinit?)\n");
-        fclose(ln->metadata_fp);
-    }
-
-    // Attempt to open an existing file
-    const char *meta_file = ln->meta_fname;
-    if (!meta_file) {
-	    printf("nvme: lmetadata not specified\n");
-	    return -1;
-    }
-    ln->metadata_fp = fopen(meta_file, "r+b");
-    if (!ln->metadata_fp) {
-        // Attempt to create an empty file
-        ln->metadata_fp = fopen(meta_file, "w+b");
-        if (!ln->metadata_fp) {
-            printf("nvme: lnvm_init_meta: fopen(%s)\n", meta_file);
-            return -EEXIST;
-        }
-    }
-
-    struct stat buf;
-    if (fstat(fileno(ln->metadata_fp), &buf)) {
-        printf("nvme: lnvm_init_meta: fstat\n");
-        return -1;
-    }
-
-    if (buf.st_size == total_meta_bytes) {
-        printf("Found a valid metadata file.\n");
-        return 0;   // All good
-    }
-
-    if (buf.st_size == 0) {
-        printf("Metadata file not found.\n");
-    } else {
-        printf("Invalid metadata file (size expected: %lu, found: %lu)\n",
-               total_meta_bytes, buf.st_size);
-    }
-    printf("Formatting for LBAF(0x%02x)\n",
-           NVME_ID_NS_FLBAS_INDEX(n->namespaces[0].id_ns.flbas));
+    const size_t meta_per_sector = lnvm_get_meta_per_sector(n);
 
     // Create meta-data file when it is empty or invalid
-    if (ftruncate(fileno(ln->metadata_fp), 0)) {
-        printf("nvme: lnvm_init_meta: ftrunca\n");
+    if (ftruncate(fileno(n->metadata_fp), 0)) {
+        printf("nvme: lnvm_init_meta: ftruncate\n");
         return -1;
     }
 
@@ -1133,7 +1101,7 @@ static int lnvm_init_meta(NvmeCtrl *n)
 
     int i;
     for (i = 0; i < ln->params.ppa_secs_total; i++) {
-        size_t written = fwrite(sector_meta, 1, meta_per_sector, ln->metadata_fp);
+        size_t written = fwrite(sector_meta, 1, meta_per_sector, n->metadata_fp);
         if (written != meta_per_sector) {
             printf("nvme: lnvm_init_meta: fwrite\n");
             return -EIO;
@@ -1177,10 +1145,10 @@ static int lnvm_init_chunk_state(NvmeCtrl *n)
         return -1;
     }
 
-    fseek(ln->metadata_fp, 0, SEEK_SET);
+    fseek(n->metadata_fp, 0, SEEK_SET);
 
     for (i = 0; i < total_chunks; i++) {
-        read_metas = fread(meta_buf, meta_len, sec_per_chunk, ln->metadata_fp);
+        read_metas = fread(meta_buf, meta_len, sec_per_chunk, n->metadata_fp);
         if (read_metas != sec_per_chunk) {
             printf("Invalid size of the meta file\n");
 
@@ -1239,7 +1207,6 @@ static int lnvm_init(NvmeCtrl *n)
     NvmeNamespace *ns;
     unsigned int i;
     uint64_t chnl_blks;
-    int ret = 0;
 
     ln = &n->lnvm_ctrl;
 
@@ -1297,19 +1264,7 @@ static int lnvm_init(NvmeCtrl *n)
         ln->id_ctrl.perf.tbem = 1000000;
         memset(&ln->id_ctrl.wrt.resv[0], 0, sizeof(uint8_t) * 40);
 
-	lnvm_init_id_ppaf(ln);
-    }
-
-    ret = lnvm_init_meta(n);   // Initialize metadata file
-    if (ret) {
-        printf("nvme: lnvm_init_meta: failed\n");
-        return ret;
-    }
-
-    ret = lnvm_init_chunk_state(n);
-    if (ret) {
-        printf("nvme: cannot gather chunk state\n");
-        return ret;
+        lnvm_init_id_ppaf(ln);
     }
 
     lnvm_te_init(n);
@@ -1324,8 +1279,6 @@ static void lnvm_exit(NvmeCtrl *n)
     lnvm_te_exit(n);
 
     free(ln->chunk_state);
-    fclose(n->lnvm_ctrl.metadata_fp);
-    n->lnvm_ctrl.metadata_fp = NULL;
 }
 #endif /* HW_NVME_LNVM_STRUCTS_H */
 

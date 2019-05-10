@@ -182,6 +182,8 @@ typedef struct NvmeCtrl {
     uint64_t    eventidx_addr;
 
     LnvmCtrl    lnvm_ctrl;
+    char        *meta_fname;
+    FILE        *metadata_fp;
 } NvmeCtrl;
 
 typedef struct NvmeDifTuple {
@@ -205,4 +207,5 @@ static uint16_t nvme_dma_read_prp(NvmeCtrl *n, uint8_t *ptr, uint32_t len,
 static void nvme_enqueue_event(NvmeCtrl *n, uint8_t event_type,
                                uint8_t event_info, uint8_t log_page);
 static void nvme_enqueue_req_completion(NvmeCQueue *cq, NvmeRequest *req);
+static int nvme_init_meta(NvmeCtrl *n);
 #endif /* HW_NVME_H */

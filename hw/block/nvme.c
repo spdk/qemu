@@ -58,6 +58,7 @@
  *  oacs=<oacs>      : Optional Admin command support, Default:Format
  *  cmbsz=<cmbsz>    : Controller Memory Buffer CMBSZ register, Default:0
  *  cmbloc=<cmbloc>  : Controller Memory Buffer CMBLOC register, Default:0
+ *  metadata=<file>  : Load metadata from file destination
  *
  * The logical block formats all start at 512 byte blocks and double for the
  * next index. If meta-data is non-zero, half the logical block formats will
@@ -84,7 +85,6 @@
  *  dual (2) and quad (4) plane modes. Defult: 1
  *  lblks_per_pln      : Number of blocks per plane. Default: 1
  *  lreadl2ptbl=<int>  : Load logical to physical table. 1: yes, 0: no. Default: 1
- *  lmetadata=<file>   : Load metadata from file destination
  *
  * Advanced options for OpenChannel error injection:
  *  lb_err_write       : Write error frequency in sectors. Default: 0 (disabled)
@@ -673,14 +673,52 @@ static uint16_t nvme_rw_check_req(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     return 0;
 }
 
+static int nvme_meta_set(NvmeCtrl *n, uint64_t slba, uint8_t *meta_buf, uint64_t meta_size, uint64_t ms)
+{
+    FILE *meta_fp = n->metadata_fp;
+    uint64_t seek = slba * ms;
+
+    if (fseek(meta_fp, seek, SEEK_SET)) {
+        printf("nvme_meta_set: fseek\n");
+        return NVME_INTERNAL_DEV_ERROR;
+    }
+
+    if (fwrite(meta_buf, meta_size, 1, meta_fp) != 1) {
+        printf("nvme_meta_set: fwrite - meta: slba(0x%016lx) len(0x%016lx)\n", slba, meta_size);
+        return NVME_INTERNAL_DEV_ERROR;
+    }
+
+    return NVME_SUCCESS;
+}
+
+static int nvme_meta_get(NvmeCtrl *n, uint64_t slba, uint8_t *meta_buf, uint64_t meta_size, uint64_t ms)
+{
+    FILE *meta_fp = n->metadata_fp;
+    uint64_t seek = slba * ms;
+
+    if (fseek(meta_fp, seek, SEEK_SET)) {
+        printf("nvme_meta_get: fseek\n");
+        return NVME_INTERNAL_DEV_ERROR;
+    }
+
+    if (fread(meta_buf, meta_size, 1, meta_fp) != 1) {
+        printf("nvme_meta_get: fread - meta: slba(0x%016lx) len(0x%016lx)\n", slba, meta_size);
+        return NVME_INTERNAL_DEV_ERROR;
+    }
+
+    return NVME_SUCCESS;
+}
+
 static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     NvmeRequest *req)
 {
     NvmeRwCmd *rw = (NvmeRwCmd *)cmd;
+    uint8_t *meta_buf = NULL;
     uint16_t ctrl = 0;
     uint32_t nlb  = le16_to_cpu(rw->nlb) + 1;
     uint64_t prp1 = le64_to_cpu(rw->prp1);
     uint64_t prp2 = le64_to_cpu(rw->prp2);
+    uint64_t mptr = le64_to_cpu(rw->mptr);
     uint64_t slba;
     uint64_t elba;
     const uint8_t lba_index = NVME_ID_NS_FLBAS_INDEX(ns->id_ns.flbas);
@@ -689,7 +727,7 @@ static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     uint64_t data_size = nlb << data_shift;
     uint64_t meta_size = nlb * ms;
     uint64_t data_offset;
-    uint16_t err;
+    uint16_t rc;
 
     slba = le64_to_cpu(rw->slba);
     elba = slba + nlb;
@@ -697,17 +735,47 @@ static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     data_offset = ns->start_block + (slba << data_shift);
     ctrl = le16_to_cpu(rw->control);
 
-    err = nvme_rw_check_req(n, ns, cmd, req, slba, elba, nlb, ctrl,
+    if (meta_size) {
+        meta_buf = g_malloc0(meta_size);
+        if (!meta_buf) {
+            printf("nvme_rw: ENOMEM\n");
+            return NVME_INTERNAL_DEV_ERROR;
+        }
+    }
+
+    rc = nvme_rw_check_req(n, ns, cmd, req, slba, elba, nlb, ctrl,
                             data_size, meta_size);
-    if (err) {
-        return err;
+    if (rc) {
+        goto free_meta_buf;
     }
 
     if (nvme_map_prp(&req->qsg, &req->iov, prp1, prp2, data_size, n)) {
         nvme_set_error_page(n, req->sq->sqid, cmd->cid, NVME_INVALID_FIELD,
                             offsetof(NvmeRwCmd, prp1), 0, ns->id);
-        return NVME_INVALID_FIELD | NVME_DNR;
+        rc = NVME_INVALID_FIELD | NVME_DNR;
+        goto free_meta_buf;
     }
+
+    if (mptr) {
+        if (req->is_write) {
+            nvme_addr_read(n, mptr, meta_buf, meta_size);
+
+            rc = nvme_meta_set(n, slba, meta_buf, meta_size, ms);
+            if (rc) {
+                printf("nvme_rw: set meta status failed\n");
+                goto free_meta_buf;
+            }
+        } else {
+            rc = nvme_meta_get(n, slba, meta_buf, meta_size, ms);
+            if (rc) {
+                printf("nvme_rw: get meta status failed\n");
+                goto free_meta_buf;
+            }
+
+            nvme_addr_write(n, mptr, meta_buf, meta_size);
+        }
+    }
+
     req->slba = slba;
     req->meta_size = 0;
     req->status = NVME_SUCCESS;
@@ -729,7 +797,12 @@ static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
                      blk_aio_preadv(n->conf.blk, data_offset, &req->iov, 0, nvme_rw_cb, req);
     }
 
-    return NVME_NO_COMPLETE;
+    rc = NVME_NO_COMPLETE;
+
+free_meta_buf:
+    g_free(meta_buf);
+
+    return rc;
 }
 
 static uint16_t nvme_io_cmd(NvmeCtrl *n, NvmeCmd *cmd, NvmeRequest *req)
@@ -1640,11 +1713,7 @@ static uint16_t nvme_format_namespace(NvmeNamespace *ns, uint8_t lba_idx,
 
     nvme_ns_data_save(ns->ctrl);
 
-    if (lnvm_dev(ns->ctrl)) {
-        return lnvm_init_meta(ns->ctrl) ? NVME_INTERNAL_DEV_ERROR : NVME_SUCCESS;
-    }
-
-    return NVME_SUCCESS;
+    return nvme_init_meta(ns->ctrl) ? NVME_INTERNAL_DEV_ERROR : NVME_SUCCESS;
 }
 
 static uint16_t nvme_format(NvmeCtrl *n, NvmeCmd *cmd)
@@ -2285,6 +2354,77 @@ error_malloc:
     nvme_ns_data_save(n);
 }
 
+static int nvme_init_meta(NvmeCtrl *n)
+{
+    NvmeNamespace *ns = &n->namespaces[0];
+    struct stat buf;
+    size_t total_meta_bytes;
+
+    if (n->num_namespaces != 1) {
+        printf("nvme: nvme_init_meta: multiple namespaces not supported\n");
+        return -1;
+    }
+
+    if (lnvm_dev(n)) {
+        total_meta_bytes = lnvm_get_total_meta_size(n);
+    } else {
+        uint16_t lba_index = NVME_ID_NS_FLBAS_INDEX(ns->id_ns.flbas);
+        total_meta_bytes = ns->id_ns.lbaf[lba_index].ms * ns->ns_blks;
+    }
+
+    if (!total_meta_bytes) {
+        return 0;
+    }
+
+    if (!n->meta_fname) {
+        printf("nvme: metadata not specified\n");
+        return -1;
+    }
+
+    // Attempt to open an existing file
+    if (!n->metadata_fp) {
+        n->metadata_fp = fopen(n->meta_fname, "r+b");
+        if (!n->metadata_fp) {
+            // Attempt to create an empty file
+            n->metadata_fp = fopen(n->meta_fname, "w+b");
+            if (!n->metadata_fp) {
+                printf("nvme: nvme_init_meta: fopen(%s)\n", n->meta_fname);
+                return -1;
+            }
+        }
+    } else {
+        // In case of an NVMe Format we want to clear the meta file - mostly for lnvm
+        if (ftruncate(fileno(n->metadata_fp), 0)) {
+            printf("nvme: nvme_init_meta: ftruncate\n");
+            return -1;
+        }
+    }
+
+    if (fstat(fileno(n->metadata_fp), &buf)) {
+        printf("nvme: nvme_init_meta: fstat\n");
+        return -1;
+    }
+
+    if (buf.st_size == total_meta_bytes) {
+        printf("Found a valid metadata file.\n");
+        return 0;   // All good
+    }
+    printf("Formatting meta for LBAF(0x%02x)\n",
+           NVME_ID_NS_FLBAS_INDEX(n->namespaces[0].id_ns.flbas));
+
+    if (lnvm_dev(n)) {
+        return lnvm_init_meta(n);
+    }
+
+    // Create meta-data file when it is empty or invalid
+    if (ftruncate(fileno(n->metadata_fp), total_meta_bytes)) {
+        printf("nvme: nvme_init_meta: ftruncate\n");
+        return -1;
+    }
+
+    return 0;
+}
+
 static void nvme_init_namespaces(NvmeCtrl *n)
 {
     nvme_ns_data_load(n);
@@ -2484,6 +2624,12 @@ static void nvme_realize(PCIDevice *pci_dev, Error **errp)
 
     if (lnvm_dev(n) && lnvm_init(n))
         error_setg(errp, "could not init lnvm subsystem");
+
+    if(nvme_init_meta(n))
+        error_setg(errp, "could not init nvme meta file");
+
+    if (lnvm_dev(n) && lnvm_init_chunk_state(n))
+        error_setg(errp, "could not init lnvm chunk state");
 }
 
 static void nvme_exit(PCIDevice *pci_dev)
@@ -2507,6 +2653,9 @@ static void nvme_exit(PCIDevice *pci_dev)
     if (lnvm_dev(n)) {
         lnvm_exit(n);
     }
+
+    fclose(n->metadata_fp);
+    n->metadata_fp = NULL;
 
     qemu_mutex_destroy(&n->enq_evt_mutex);
 }
@@ -2544,6 +2693,7 @@ static Property nvme_props[] = {
     DEFINE_PROP_UINT16("oacs", NvmeCtrl, oacs, 0),
     DEFINE_PROP_UINT16("vid", NvmeCtrl, vid, 0),
     DEFINE_PROP_UINT16("did", NvmeCtrl, did, 0),
+    DEFINE_PROP_STRING("metadata", NvmeCtrl, meta_fname),
     DEFINE_PROP_STRING("nsdatafile", NvmeCtrl, ns_data_fname),
     DEFINE_PROP_UINT8("lver", NvmeCtrl, lnvm_ctrl.id_ctrl.ver_id, 0),
     DEFINE_PROP_UINT8("lsecs_per_pg", NvmeCtrl, lnvm_ctrl.params.sec_per_pg, 1),
@@ -2553,7 +2703,6 @@ static Property nvme_props[] = {
     DEFINE_PROP_UINT8("lnum_lun", NvmeCtrl, lnvm_ctrl.params.num_lun, 1),
     DEFINE_PROP_UINT8("lnum_pln", NvmeCtrl, lnvm_ctrl.params.num_pln, 1),
     DEFINE_PROP_UINT16("lblks_per_pln", NvmeCtrl, lnvm_ctrl.params.blks_per_pln, 1),
-    DEFINE_PROP_STRING("lmetadata", NvmeCtrl, lnvm_ctrl.meta_fname),
     DEFINE_PROP_UINT32("lb_err_write", NvmeCtrl, lnvm_ctrl.err_write.err_freq, 0),
     DEFINE_PROP_UINT32("ln_err_write", NvmeCtrl, lnvm_ctrl.err_write.n_err, 0),
     DEFINE_PROP_UINT32("lb_err_erase", NvmeCtrl, lnvm_ctrl.err_erase.err_freq, 0),
