@@ -293,8 +293,6 @@ typedef struct LnvmCtrl {
     LnvmErrInjection    err_read;
     LnvmChnkDesc        *chunk_state;
     LnvmChunksNoti      te_data;
-    char                *meta_fname;
-    FILE                *metadata_fp;
 } LnvmCtrl;
 
 #define LNVM_ER_DULBE(err_rec)  ((err_rec >> 8) & 0x1)
