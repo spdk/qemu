@@ -1,0 +1,435 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d48b186_660daff4",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 680,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "This is a static function called only if n-\u003emetadata_fp !\u003d NULL. Therefore, this check is unnecessary.",
+      "range": {
+        "startLine": 680,
+        "startChar": 0,
+        "endLine": 680,
+        "endChar": 19
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c929f021_df9be2ad",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 682,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "This function\u0027s return code is used by nvme_rw as an NVMe error code (same thing with nvme_meta_get). Let\u0027s return proper NVMe error code in case of errors and NVME_SUCCESS in case of success.",
+      "range": {
+        "startLine": 682,
+        "startChar": 8,
+        "endLine": 682,
+        "endChar": 18
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5c9beaf_fca6d24a",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 718,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "What\u0027s the point of flushing after doing a read?",
+      "range": {
+        "startLine": 718,
+        "startChar": 8,
+        "endLine": 718,
+        "endChar": 14
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2cc16873_d447cb21",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 722,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Double newline.",
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26524802_82a1645d",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 736,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "I\u0027d call this mptr to keep all the NVMe command variables consistent with the names in the spec.",
+      "range": {
+        "startLine": 736,
+        "startChar": 13,
+        "endLine": 736,
+        "endChar": 17
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d2fb19b_dbe4898d",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 754,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Do we really need to allocate this much memory? Shouldn\u0027t meta_size be sufficient?",
+      "range": {
+        "startLine": 754,
+        "startChar": 29,
+        "endLine": 754,
+        "endChar": 53
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f395c9e6_c0654cb9",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 757,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "This function doesn\u0027t return errno compatible error codes. Replace it with appropriate NVME_ error code.",
+      "range": {
+        "startLine": 757,
+        "startChar": 19,
+        "endLine": 757,
+        "endChar": 26
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53676429_efdfb44f",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 794,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "There\u0027s no need to check it against NULL, just call g_free(meta_buf).",
+      "range": {
+        "startLine": 794,
+        "startChar": 0,
+        "endLine": 794,
+        "endChar": 19
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2493ad08_c59be7c3",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 819,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Let\u0027s replace this return statement with rc \u003d NVME_NO_COMPLETE. That way we\u0027ll be able to have just one place we\u0027re freeing meta_buf (remove the one on lines 794-796).",
+      "range": {
+        "startLine": 819,
+        "startChar": 0,
+        "endLine": 819,
+        "endChar": 28
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53482d35_2ced55da",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 822,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Same here.",
+      "range": {
+        "startLine": 822,
+        "startChar": 0,
+        "endLine": 822,
+        "endChar": 19
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f32e5c08_eddc35a7",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2241,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Let\u0027s move this to the top.",
+      "range": {
+        "startLine": 2239,
+        "startChar": 0,
+        "endLine": 2241,
+        "endChar": 28
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c844293_cca86b1a",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2254,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "When does this actually happen?",
+      "range": {
+        "startLine": 2254,
+        "startChar": 0,
+        "endLine": 2254,
+        "endChar": 25
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7c0b201_e7e3223e",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2260,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "What\u0027s the point of this variable?",
+      "range": {
+        "startLine": 2260,
+        "startChar": 16,
+        "endLine": 2260,
+        "endChar": 26
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "829f32c1_4ac3cd61",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2271,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Do we return errnos or just -1? Let\u0027s be consistent.",
+      "range": {
+        "startLine": 2271,
+        "startChar": 20,
+        "endLine": 2271,
+        "endChar": 26
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e4d5365_e96ae580",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2275,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Lets\u0027 move this declaration at the top of the function.",
+      "range": {
+        "startLine": 2275,
+        "startChar": 4,
+        "endLine": 2275,
+        "endChar": 16
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ebe637f_737f0b26",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2503,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "The error code is ignored.",
+      "range": {
+        "startLine": 2503,
+        "startChar": 4,
+        "endLine": 2503,
+        "endChar": 18
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b85ae23_32e2d3eb",
+        "filename": "hw/block/nvme.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "What\u0027s the point of remembering the filename when we have to FILE pointer?",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 0
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c56dbe81_2f6416bb",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Is this possible? I was under the impression that Open Channel devices require the metadata file.",
+      "range": {
+        "startLine": 160,
+        "startChar": 9,
+        "endLine": 160,
+        "endChar": 16
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "def7d6c0_28fea813",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1277,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-05-13T10:40:48Z",
+      "side": 1,
+      "message": "Whitespaces - get rid of the TAB and replace it with spaces.",
+      "range": {
+        "startLine": 1277,
+        "startChar": 0,
+        "endLine": 1277,
+        "endChar": 1
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
