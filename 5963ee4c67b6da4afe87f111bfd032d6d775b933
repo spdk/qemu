@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "41c6008f_c86022fb",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 680,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d48b186_660daff4",
+      "range": {
+        "startLine": 680,
+        "startChar": 0,
+        "endLine": 680,
+        "endChar": 19
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c929f021_df9be2ad",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e0ffdf2_09b7cefe",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 682,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c929f021_df9be2ad",
+      "range": {
+        "startLine": 682,
+        "startChar": 8,
+        "endLine": 682,
+        "endChar": 18
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "2a6393bb_dc0353ed",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 718,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5c9beaf_fca6d24a",
+      "range": {
+        "startLine": 718,
+        "startChar": 8,
+        "endLine": 718,
+        "endChar": 14
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2cc16873_d447cb21",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -85,6 +157,24 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f0880f7_1caf82bf",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 722,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2cc16873_d447cb21",
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "e58b3751_4bd917d6",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 736,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "26524802_82a1645d",
+      "range": {
+        "startLine": 736,
+        "startChar": 13,
+        "endLine": 736,
+        "endChar": 17
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1d2fb19b_dbe4898d",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -131,6 +245,30 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9923aa89_bdde46ee",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 754,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d2fb19b_dbe4898d",
+      "range": {
+        "startLine": 754,
+        "startChar": 29,
+        "endLine": 754,
+        "endChar": 53
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "9297afdf_f89098b3",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 757,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f395c9e6_c0654cb9",
+      "range": {
+        "startLine": 757,
+        "startChar": 19,
+        "endLine": 757,
+        "endChar": 26
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53676429_efdfb44f",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -177,6 +339,30 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27aef82a_e4e1caf9",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 794,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53676429_efdfb44f",
+      "range": {
+        "startLine": 794,
+        "startChar": 0,
+        "endLine": 794,
+        "endChar": 19
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +389,30 @@
     },
     {
       "key": {
+        "uuid": "6f06a8c4_450eb1e2",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 819,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2493ad08_c59be7c3",
+      "range": {
+        "startLine": 819,
+        "startChar": 0,
+        "endLine": 819,
+        "endChar": 28
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53482d35_2ced55da",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -223,6 +433,30 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53947580_baba608f",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 822,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53482d35_2ced55da",
+      "range": {
+        "startLine": 822,
+        "startChar": 0,
+        "endLine": 822,
+        "endChar": 19
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
@@ -249,6 +483,30 @@
     },
     {
       "key": {
+        "uuid": "e4a8c930_f8ab4242",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2241,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f32e5c08_eddc35a7",
+      "range": {
+        "startLine": 2239,
+        "startChar": 0,
+        "endLine": 2241,
+        "endChar": 28
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0c844293_cca86b1a",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -260,6 +518,30 @@
       "writtenOn": "2019-05-13T10:40:48Z",
       "side": 1,
       "message": "When does this actually happen?",
+      "range": {
+        "startLine": 2254,
+        "startChar": 0,
+        "endLine": 2254,
+        "endChar": 25
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48df0223_a0e5f959",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2254,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "After formatting a namespace during use",
+      "parentUuid": "0c844293_cca86b1a",
       "range": {
         "startLine": 2254,
         "startChar": 0,
@@ -295,6 +577,30 @@
     },
     {
       "key": {
+        "uuid": "a6d30787_85d34f7d",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2260,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7c0b201_e7e3223e",
+      "range": {
+        "startLine": 2260,
+        "startChar": 16,
+        "endLine": 2260,
+        "endChar": 26
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "829f32c1_4ac3cd61",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -315,6 +621,30 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8023c48_ff21bea4",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2271,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "829f32c1_4ac3cd61",
+      "range": {
+        "startLine": 2271,
+        "startChar": 20,
+        "endLine": 2271,
+        "endChar": 26
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
@@ -341,6 +671,30 @@
     },
     {
       "key": {
+        "uuid": "8ad11d7e_3c90ecfe",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2275,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e4d5365_e96ae580",
+      "range": {
+        "startLine": 2275,
+        "startChar": 4,
+        "endLine": 2275,
+        "endChar": 16
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ebe637f_737f0b26",
         "filename": "hw/block/nvme.c",
         "patchSetId": 1
@@ -364,6 +718,30 @@
     },
     {
       "key": {
+        "uuid": "19bdfb79_cd1e3bdd",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2503,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ebe637f_737f0b26",
+      "range": {
+        "startLine": 2503,
+        "startChar": 4,
+        "endLine": 2503,
+        "endChar": 18
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7b85ae23_32e2d3eb",
         "filename": "hw/block/nvme.h",
         "patchSetId": 1
@@ -375,6 +753,30 @@
       "writtenOn": "2019-05-13T10:40:48Z",
       "side": 1,
       "message": "What\u0027s the point of remembering the filename when we have to FILE pointer?",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 0
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23d41d6e_a1fc005e",
+        "filename": "hw/block/nvme.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Saving the file name from the input config to some internal structure",
+      "parentUuid": "7b85ae23_32e2d3eb",
       "range": {
         "startLine": 184,
         "startChar": 0,
@@ -410,6 +812,30 @@
     },
     {
       "key": {
+        "uuid": "e955a600_aa977eec",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c56dbe81_2f6416bb",
+      "range": {
+        "startLine": 160,
+        "startChar": 9,
+        "endLine": 160,
+        "endChar": 16
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "def7d6c0_28fea813",
         "filename": "hw/block/nvme_lnvm_helpers.h",
         "patchSetId": 1
@@ -430,6 +856,30 @@
       "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3e7b03c_b06bf00d",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1277,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-05-13T11:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "def7d6c0_28fea813",
+      "range": {
+        "startLine": 1277,
+        "startChar": 0,
+        "endLine": 1277,
+        "endChar": 1
+      },
+      "revId": "5963ee4c67b6da4afe87f111bfd032d6d775b933",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
