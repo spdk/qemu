@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3441f18a_a5d25168",
+        "filename": "hw/block/vhost_user_nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1015333
+      },
+      "writtenOn": "2019-05-15T09:31:08Z",
+      "side": 1,
+      "message": "It should be like this:\nn-\u003ecq[cq-\u003ecqid] \u003d NULL;\nif ...",
+      "revId": "578b51b191546151a45fb029598db890794405e7",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
