@@ -10,6 +10,22 @@
 #define LNVM_PBA_UNMAPPED UINT64_MAX
 #define LNVM_LBA_UNMAPPED UINT64_MAX
 
+static int nvme_qemu_fls(int i);
+static void nvme_set_error_page(NvmeCtrl *n, uint16_t sqid, uint16_t cid,
+                                uint16_t status, uint16_t location, uint64_t lba, uint32_t nsid);
+static void nvme_rw_cb(void *opaque, int ret);
+static void nvme_addr_write(NvmeCtrl *n, hwaddr addr, void *buf, int size);
+static void nvme_addr_read(NvmeCtrl *n, hwaddr addr, void *buf, int size);
+static uint16_t nvme_map_prp(QEMUSGList *qsg, QEMUIOVector *iov,
+                             uint64_t prp1, uint64_t prp2, uint32_t len, NvmeCtrl *n);
+static uint16_t nvme_dma_write_prp(NvmeCtrl *n, uint8_t *ptr, uint32_t len,
+                                   uint64_t prp1, uint64_t prp2);
+static uint16_t nvme_dma_read_prp(NvmeCtrl *n, uint8_t *ptr, uint32_t len,
+                                  uint64_t prp1, uint64_t prp2);
+static void nvme_enqueue_event(NvmeCtrl *n, uint8_t event_type,
+                               uint8_t event_info, uint8_t log_page);
+static void nvme_enqueue_req_completion(NvmeCQueue *cq, NvmeRequest *req);
+
 static uint8_t lnvm_dev(NvmeCtrl *n)
 {
     return (n->lnvm_ctrl.id_ctrl.ver_id != LNVM_DISABLED);
