@@ -22,6 +22,30 @@
       "revId": "d74b221d4ebab7864edca7f29ff0b385f1ebc8a0",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd1ce880_a8047ca0",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 3
+      },
+      "lineNbr": 2235,
+      "author": {
+        "id": 1011262
+      },
+      "writtenOn": "2019-06-10T13:03:56Z",
+      "side": 1,
+      "message": "We want to make possible to use multiple namespaces on one controller, but it possible only when total_meta_bytes \u003d\u003d 0 as far as I understand. With that, in such case, we will be able to use multiple namespaces, because we will return in line 2229.",
+      "parentUuid": "3d842a53_099baddf",
+      "range": {
+        "startLine": 2231,
+        "startChar": 0,
+        "endLine": 2235,
+        "endChar": 5
+      },
+      "revId": "d74b221d4ebab7864edca7f29ff0b385f1ebc8a0",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
     }
   ]
 }
