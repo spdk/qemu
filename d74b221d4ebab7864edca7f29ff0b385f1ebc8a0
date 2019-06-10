@@ -46,6 +46,30 @@
       "revId": "d74b221d4ebab7864edca7f29ff0b385f1ebc8a0",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be8d7030_5967cbb3",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 3
+      },
+      "lineNbr": 2235,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-06-10T13:08:29Z",
+      "side": 1,
+      "message": "All right, that makes sense, so perhaps we can move the first check down here, like so:\n\nif (n-\u003enum_namespaces \u003d\u003d 0 || total_meta_bytes \u003d\u003d 0) {\n return 0;\n} else if (n-\u003enum_namespaces !\u003d 1) {\n printf(...);\n return -1;\n}",
+      "parentUuid": "dd1ce880_a8047ca0",
+      "range": {
+        "startLine": 2231,
+        "startChar": 0,
+        "endLine": 2235,
+        "endChar": 5
+      },
+      "revId": "d74b221d4ebab7864edca7f29ff0b385f1ebc8a0",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
     }
   ]
 }
