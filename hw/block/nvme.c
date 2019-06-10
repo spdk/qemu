@@ -2284,7 +2284,7 @@ static const MemoryRegionOps nvme_cmb_ops = {
 static int nvme_check_constraints(NvmeCtrl *n)
 {
     if ((!(n->conf.blk)) || !(n->serial) ||
-            (n->num_namespaces == 0 || n->num_namespaces > NVME_MAX_NUM_NAMESPACES) ||
+            (n->num_namespaces > NVME_MAX_NUM_NAMESPACES) ||
             (n->num_queues < 1 || n->num_queues > NVME_MAX_QS) ||
             (n->db_stride > NVME_MAX_STRIDE) ||
             (n->max_q_ents < 1) ||
@@ -2384,9 +2384,8 @@ static int nvme_init_meta(NvmeCtrl *n)
     struct stat buf;
     size_t total_meta_bytes;
 
-    if (n->num_namespaces != 1) {
-        printf("nvme: nvme_init_meta: multiple namespaces not supported\n");
-        return -1;
+    if (n->num_namespaces == 0) {
+        return 0;
     }
 
     if (lnvm_dev(n)) {
@@ -2398,6 +2397,9 @@ static int nvme_init_meta(NvmeCtrl *n)
 
     if (!total_meta_bytes) {
         return 0;
+    } else if (n->num_namespaces != 1) {
+        printf("nvme: nvme_init_meta: multiple namespaces not supported with metadata\n");
+        return -1;
     }
 
     if (!n->meta_fname) {
@@ -2630,7 +2632,7 @@ static void nvme_realize(PCIDevice *pci_dev, Error **errp)
     n->start_time = time(NULL);
     n->reg_size = 1 << (nvme_qemu_fls(NVME_REG_DBS + ((n->num_queues + 1) * 8 * 1 <<
                                                       n->db_stride)));
-    n->ns_size = bs_size / (uint64_t)n->num_namespaces;
+    n->ns_size = n->num_namespaces == 0 ? 0 : bs_size / (uint64_t)n->num_namespaces;
 
     n->sq = g_malloc0(sizeof(*n->sq) * n->num_queues);
     n->cq = g_malloc0(sizeof(*n->cq) * n->num_queues);
