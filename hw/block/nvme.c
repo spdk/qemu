@@ -619,20 +619,56 @@ static uint16_t nvme_flush(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     return NVME_NO_COMPLETE;
 }
 
+static int nvme_meta_set(NvmeCtrl *n, uint64_t slba, uint8_t *meta_buf, uint64_t meta_size, uint64_t ms)
+{
+    FILE *meta_fp = n->metadata_fp;
+    uint64_t seek = slba * ms;
+
+    if (fseek(meta_fp, seek, SEEK_SET)) {
+        printf("nvme_meta_set: fseek\n");
+        return NVME_INTERNAL_DEV_ERROR;
+    }
+
+    if (fwrite(meta_buf, meta_size, 1, meta_fp) != 1) {
+        printf("nvme_meta_set: fwrite - meta: slba(0x%016lx) len(0x%016lx)\n", slba, meta_size);
+        return NVME_INTERNAL_DEV_ERROR;
+    }
+
+    return NVME_SUCCESS;
+}
+
 static uint16_t nvme_write_zeros(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     NvmeRequest *req)
 {
     NvmeRwCmd *rw = (NvmeRwCmd *)cmd;
     const uint8_t lba_index = NVME_ID_NS_FLBAS_INDEX(ns->id_ns.flbas);
     const uint8_t data_shift = ns->id_ns.lbaf[lba_index].ds;
+    const uint16_t ms = ns->id_ns.lbaf[lba_index].ms;
     uint64_t slba = le64_to_cpu(rw->slba);
     uint32_t nlb  = le16_to_cpu(rw->nlb) + 1;
     uint64_t offset = slba << data_shift;
     uint32_t count = nlb << data_shift;
+    uint64_t meta_size = nlb * ms;
+    uint8_t *meta_buf = NULL;
+    int rc;
 
     if (unlikely(slba + nlb > ns->id_ns.nsze)) {
         trace_nvme_err_invalid_lba_range(slba, nlb, ns->id_ns.nsze);
         return NVME_LBA_RANGE | NVME_DNR;
+    }
+
+    if (meta_size) {
+        meta_buf = g_malloc0(meta_size);
+        if (!meta_buf) {
+            printf("nvme_write_zeros: ENOMEM\n");
+            return NVME_INTERNAL_DEV_ERROR;
+        }
+
+        rc = nvme_meta_set(n, slba, meta_buf, meta_size, ms);
+        if (rc) {
+            printf("nvme_write_zeros: set meta status failed\n");
+            goto free_meta_buf;
+        }
     }
 
     req->has_sg = false;
@@ -640,7 +676,13 @@ static uint16_t nvme_write_zeros(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
                      BLOCK_ACCT_WRITE);
     req->aiocb = blk_aio_pwrite_zeroes(n->conf.blk, offset, count,
                                         BDRV_REQ_MAY_UNMAP, nvme_rw_cb, req);
-    return NVME_NO_COMPLETE;
+
+    rc = NVME_NO_COMPLETE;
+
+free_meta_buf:
+    g_free(meta_buf);
+
+    return rc;
 }
 
 static uint16_t nvme_rw_check_req(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
@@ -671,24 +713,6 @@ static uint16_t nvme_rw_check_req(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     }
 
     return 0;
-}
-
-static int nvme_meta_set(NvmeCtrl *n, uint64_t slba, uint8_t *meta_buf, uint64_t meta_size, uint64_t ms)
-{
-    FILE *meta_fp = n->metadata_fp;
-    uint64_t seek = slba * ms;
-
-    if (fseek(meta_fp, seek, SEEK_SET)) {
-        printf("nvme_meta_set: fseek\n");
-        return NVME_INTERNAL_DEV_ERROR;
-    }
-
-    if (fwrite(meta_buf, meta_size, 1, meta_fp) != 1) {
-        printf("nvme_meta_set: fwrite - meta: slba(0x%016lx) len(0x%016lx)\n", slba, meta_size);
-        return NVME_INTERNAL_DEV_ERROR;
-    }
-
-    return NVME_SUCCESS;
 }
 
 static int nvme_meta_get(NvmeCtrl *n, uint64_t slba, uint8_t *meta_buf, uint64_t meta_size, uint64_t ms)
