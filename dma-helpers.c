@@ -76,6 +76,8 @@ typedef struct {
     uint32_t align;
     uint64_t offset;
     uint64_t *offset_list;
+    uint64_t offset_entry_size;
+    int cur_offset_index;
     DMADirection dir;
     int sg_cur_index;
     dma_addr_t sg_cur_byte;
@@ -176,6 +178,7 @@ static void dma_blk_list_cb(void *opaque, int ret)
 {
     DMAAIOCB *dbs = (DMAAIOCB *)opaque;
     dma_addr_t cur_addr, cur_len;
+    uint64_t offset_entry_size = dbs->offset_entry_size;
     void *mem;
 
     trace_dma_blk_cb(dbs, ret);
@@ -193,19 +196,34 @@ static void dma_blk_list_cb(void *opaque, int ret)
     /* By not adding all sectors (dbs->sg->nsg) into the sglist, we force
      * recursion in the callback in a per sector basis. This way, we can load
      * the next address from the offset_list, instead of assuming sequentiality.
+     * We're adding entries to iovec until we get offset_entry_size amount of data
      */
-    cur_addr = dbs->sg->sg[dbs->sg_cur_index].base + dbs->sg_cur_byte;
-    cur_len = dbs->sg->sg[dbs->sg_cur_index].len - dbs->sg_cur_byte;
-    mem = dma_memory_map(dbs->sg->as, cur_addr, &cur_len, dbs->dir);
-    if (!mem) {
-        goto out;
-    }
-    qemu_iovec_add(&dbs->iov, mem, cur_len);
-    dbs->sg_cur_byte += cur_len;
-    if (dbs->sg_cur_byte == dbs->sg->sg[dbs->sg_cur_index].len) {
-        dbs->sg_cur_byte = 0;
-        ++dbs->sg_cur_index;
-    }
+    do {
+        assert(dbs->sg_cur_index < dbs->sg->nsg);
+
+        /* Fill the iovec until we get enough data to use the next entry in offset_list
+        */
+        cur_addr = dbs->sg->sg[dbs->sg_cur_index].base + dbs->sg_cur_byte;
+        cur_len = dbs->sg->sg[dbs->sg_cur_index].len - dbs->sg_cur_byte;
+
+        if (cur_len > offset_entry_size) {
+            cur_len = offset_entry_size;
+        }
+
+        mem = dma_memory_map(dbs->sg->as, cur_addr, &cur_len, dbs->dir);
+        if (!mem) {
+            goto out;
+        }
+        qemu_iovec_add(&dbs->iov, mem, cur_len);
+        dbs->sg_cur_byte += cur_len;
+        offset_entry_size -= cur_len;
+        if (dbs->sg_cur_byte == dbs->sg->sg[dbs->sg_cur_index].len) {
+            dbs->sg_cur_byte = 0;
+            ++dbs->sg_cur_index;
+        }
+    } while (offset_entry_size);
+
+    dbs->cur_offset_index++;
 
 out:
     if (dbs->iov.size == 0) {
@@ -291,8 +309,8 @@ BlockAIOCB *dma_blk_io(AioContext *ctx,
 }
 
 BlockAIOCB *dma_blk_io_list(AioContext *ctx,
-                            QEMUSGList *sg, uint64_t *offset_list, uint32_t align,
-                            DMAIOFunc *io_func, void *io_func_opaque,
+                            QEMUSGList *sg, uint64_t *offset_list, uint64_t offset_entry_size,
+                            uint32_t align, DMAIOFunc *io_func, void *io_func_opaque,
                             BlockCompletionFunc *cb,
                             void *opaque, DMADirection dir)
 {
@@ -305,6 +323,8 @@ BlockAIOCB *dma_blk_io_list(AioContext *ctx,
     dbs->sg = sg;
     dbs->ctx = ctx;
     dbs->offset_list = offset_list;
+    dbs->offset_entry_size = offset_entry_size;
+    dbs->cur_offset_index = 0;
     dbs->offset = -1;
     dbs->align = align;
     dbs->sg_cur_index = 0;
@@ -338,10 +358,10 @@ BlockAIOCB *dma_blk_read(BlockBackend *blk,
 }
 
 BlockAIOCB *dma_blk_read_list(BlockBackend *blk,
-                              QEMUSGList *sg, uint64_t *offset_list, uint32_t align,
-                              void (*cb)(void *opaque, int ret), void *opaque)
+                              QEMUSGList *sg, uint64_t *offset_list, uint64_t offset_entry_size,
+                              uint32_t align, void (*cb)(void *opaque, int ret), void *opaque)
 {
-    return dma_blk_io_list(blk_get_aio_context(blk), sg, offset_list, align,
+    return dma_blk_io_list(blk_get_aio_context(blk), sg, offset_list, offset_entry_size, align,
                            dma_blk_read_io_func, blk, cb, opaque,
                            DMA_DIRECTION_FROM_DEVICE);
 }
@@ -365,10 +385,10 @@ BlockAIOCB *dma_blk_write(BlockBackend *blk,
 }
 
 BlockAIOCB *dma_blk_write_list(BlockBackend *blk,
-                               QEMUSGList *sg, uint64_t *offset_list, uint32_t align,
-                               void (*cb)(void *opaque, int ret), void *opaque)
+                               QEMUSGList *sg, uint64_t *offset_list, uint64_t offset_entry_size,
+                               uint32_t align, void (*cb)(void *opaque, int ret), void *opaque)
 {
-    return dma_blk_io_list(blk_get_aio_context(blk), sg, offset_list, align,
+    return dma_blk_io_list(blk_get_aio_context(blk), sg, offset_list, offset_entry_size, align,
                            dma_blk_write_io_func, blk, cb, opaque,
                            DMA_DIRECTION_TO_DEVICE);
 }
