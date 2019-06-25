@@ -211,15 +211,15 @@ BlockAIOCB *dma_blk_write(BlockBackend *blk,
                           QEMUSGList *sg, uint64_t offset, uint32_t align,
                           BlockCompletionFunc *cb, void *opaque);
 BlockAIOCB *dma_blk_io_list(AioContext *ctx,
-                       QEMUSGList *sg, uint64_t *offset_list, uint32_t align,
+                       QEMUSGList *sg, uint64_t *offset_list, uint64_t offset_size, uint32_t align,
                        DMAIOFunc *io_func, void *io_func_opaque,
                        BlockCompletionFunc *cb, void *opaque, DMADirection dir);
 BlockAIOCB *dma_blk_read_list(BlockBackend *blk,
-                         QEMUSGList *sg, uint64_t *offset_list, uint32_t align,
-                         BlockCompletionFunc *cb, void *opaque);
+                         QEMUSGList *sg, uint64_t *offset_list, uint64_t offset_size,
+                         uint32_t align, BlockCompletionFunc *cb, void *opaque);
 BlockAIOCB *dma_blk_write_list(BlockBackend *blk,
-                          QEMUSGList *sg, uint64_t *offset_list, uint32_t align,
-                          BlockCompletionFunc *cb, void *opaque);
+                          QEMUSGList *sg, uint64_t *offset_list, uint64_t offset_size,
+                          uint32_t align, BlockCompletionFunc *cb, void *opaque);
 
 uint64_t dma_buf_read(uint8_t *ptr, int32_t len, QEMUSGList *sg);
 uint64_t dma_buf_write(uint8_t *ptr, int32_t len, QEMUSGList *sg);
