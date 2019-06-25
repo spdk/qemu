@@ -747,9 +747,11 @@ static uint16_t lnvm_rwc(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
                        BLOCK_ACCT_WRITE : BLOCK_ACCT_READ);
         if (req->qsg.nsg > 0) {
             req->aiocb = req->is_write ?
-                         dma_blk_write_list(n->conf.blk, &req->qsg, aio_offset_list, BDRV_SECTOR_SIZE,
+                         dma_blk_write_list(n->conf.blk, &req->qsg, aio_offset_list,
+                                            1 << lnvm_ns_get_data_size_shift(ns), BDRV_SECTOR_SIZE,
                                             nvme_rw_cb, req) :
-                         dma_blk_read_list(n->conf.blk, &req->qsg, aio_offset_list, BDRV_SECTOR_SIZE,
+                         dma_blk_read_list(n->conf.blk, &req->qsg, aio_offset_list,
+                                           1 << lnvm_ns_get_data_size_shift(ns), BDRV_SECTOR_SIZE,
                                            nvme_rw_cb, req);
         } else {
             uint64_t aio_offset = aio_offset_list[0];
