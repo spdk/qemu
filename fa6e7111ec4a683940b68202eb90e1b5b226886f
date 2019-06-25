@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6141d22_263cfdb7",
+        "filename": "dma-helpers.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-06-25T08:10:49Z",
+      "side": 1,
+      "message": "Let\u0027s call this offset_entry_size / offset_element_size.",
+      "range": {
+        "startLine": 79,
+        "startChar": 13,
+        "endLine": 79,
+        "endChar": 24
+      },
+      "revId": "fa6e7111ec4a683940b68202eb90e1b5b226886f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5142ab05_743caea1",
+        "filename": "dma-helpers.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-06-25T08:10:49Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this just be a uint64_t?",
+      "range": {
+        "startLine": 183,
+        "startChar": 4,
+        "endLine": 183,
+        "endChar": 15
+      },
+      "revId": "fa6e7111ec4a683940b68202eb90e1b5b226886f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a64458a_9765de5c",
+        "filename": "dma-helpers.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-06-25T08:10:49Z",
+      "side": 1,
+      "message": "Shouldn\u0027t something similar be done inside the loop (an assertion probably)?",
+      "range": {
+        "startLine": 188,
+        "startChar": 8,
+        "endLine": 188,
+        "endChar": 41
+      },
+      "revId": "fa6e7111ec4a683940b68202eb90e1b5b226886f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4ea463f_41531991",
+        "filename": "dma-helpers.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-06-25T08:10:49Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be \u003d\u003d?",
+      "range": {
+        "startLine": 220,
+        "startChar": 29,
+        "endLine": 220,
+        "endChar": 31
+      },
+      "revId": "fa6e7111ec4a683940b68202eb90e1b5b226886f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
