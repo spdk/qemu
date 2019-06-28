@@ -708,10 +708,6 @@ static uint16_t lnvm_rwc(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
         g_free(copy_buf);
     }
 
-    if (meta_buf) {
-        g_free(meta_buf);
-    }
-
     if (is_read || is_write) {
         if (nvme_map_prp(&req->qsg, &req->iov, prp1, prp2, data_size, n)) {
             printf("lnvm_rwc: malformed prp (size:%lu), w:%d\n", data_size, is_write);
@@ -724,6 +720,10 @@ static uint16_t lnvm_rwc(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
             err = NVME_INVALID_FIELD | NVME_DNR;
             goto fail_free_meta_buf;
         }
+    }
+
+    if (meta_buf) {
+        g_free(meta_buf);
     }
 
     req->slba = lba_list[0];
