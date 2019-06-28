@@ -706,10 +706,12 @@ static uint16_t lnvm_rwc(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
 
     if (copy_buf) {
         g_free(copy_buf);
+        copy_buf = NULL;
     }
 
     if (meta_buf) {
         g_free(meta_buf);
+        meta_buf = NULL;
     }
 
     if (is_read || is_write) {
