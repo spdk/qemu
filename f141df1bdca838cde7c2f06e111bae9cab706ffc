@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff360015_8e60f394",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 721,
+      "author": {
+        "id": 1011218
+      },
+      "writtenOn": "2019-07-01T07:09:53Z",
+      "side": 1,
+      "message": "this still tries to free copy_buf again, doesn\u0027t it?\n\nCould we just set copy_buf and meta_buf to NULL after freeing it for the first time?",
+      "range": {
+        "startLine": 721,
+        "startChar": 17,
+        "endLine": 721,
+        "endChar": 35
+      },
+      "revId": "f141df1bdca838cde7c2f06e111bae9cab706ffc",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
