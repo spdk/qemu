@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15a56b75_982e5865",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1543,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-07-02T09:48:22Z",
+      "side": 1,
+      "message": "It\u0027d be a bit more readable if you did\n\nif (!n-\u003ens_data_fname) {\n  return;\n}\n...",
+      "range": {
+        "startLine": 1539,
+        "startChar": 0,
+        "endLine": 1543,
+        "endChar": 5
+      },
+      "revId": "5bcdddb068d7e704f6ba69d69494d5b6dff3e428",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82abdd3c_634a158f",
+        "filename": "hw/block/nvme.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 2177,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-07-02T09:48:22Z",
+      "side": 1,
+      "message": "Same here.",
+      "range": {
+        "startLine": 2177,
+        "startChar": 0,
+        "endLine": 2177,
+        "endChar": 35
+      },
+      "revId": "5bcdddb068d7e704f6ba69d69494d5b6dff3e428",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
