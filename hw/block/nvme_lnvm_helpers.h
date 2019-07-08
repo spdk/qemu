@@ -1203,6 +1203,7 @@ static int lnvm_init_chunk_state(NvmeCtrl *n)
         }
     }
 
+    free(meta_buf);
     return 0;
 }
 
