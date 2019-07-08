@@ -773,13 +773,6 @@ static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
         goto free_meta_buf;
     }
 
-    if (nvme_map_prp(&req->qsg, &req->iov, prp1, prp2, data_size, n)) {
-        nvme_set_error_page(n, req->sq->sqid, cmd->cid, NVME_INVALID_FIELD,
-                            offsetof(NvmeRwCmd, prp1), 0, ns->id);
-        rc = NVME_INVALID_FIELD | NVME_DNR;
-        goto free_meta_buf;
-    }
-
     if (mptr) {
         if (req->is_write) {
             nvme_addr_read(n, mptr, meta_buf, meta_size);
@@ -798,6 +791,13 @@ static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
 
             nvme_addr_write(n, mptr, meta_buf, meta_size);
         }
+    }
+
+    if (nvme_map_prp(&req->qsg, &req->iov, prp1, prp2, data_size, n)) {
+        nvme_set_error_page(n, req->sq->sqid, cmd->cid, NVME_INVALID_FIELD,
+                            offsetof(NvmeRwCmd, prp1), 0, ns->id);
+        rc = NVME_INVALID_FIELD | NVME_DNR;
+        goto free_meta_buf;
     }
 
     req->slba = slba;
