@@ -726,6 +726,7 @@ static uint16_t lnvm_rwc(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
             err = NVME_INVALID_FIELD | NVME_DNR;
             goto fail_free_meta_buf;
         }
+        req->has_sg = true;
     }
 
     req->slba = lba_list[0];
