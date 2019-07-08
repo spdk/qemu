@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0a9a49a2_b48a6578",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 729,
+      "author": {
+        "id": 1015368
+      },
+      "writtenOn": "2019-07-08T10:29:06Z",
+      "side": 1,
+      "message": "Makes sense, but I think the sglist is leaked in nvme_rw:\n\nhw/block/nvme.c:775:\n\n    if (nvme_map_prp(\u0026req-\u003eqsg, \u0026req-\u003eiov, prp1, prp2, data_size, n)) {\n        nvme_set_error_page(n, req-\u003esq-\u003esqid, cmd-\u003ecid, NVME_INVALID_FIELD,\n                            offsetof(NvmeRwCmd, prp1), 0, ns-\u003eid);\n        rc \u003d NVME_INVALID_FIELD | NVME_DNR;\n        goto free_meta_buf;\n    }\n\n    if (mptr) {\n        if (req-\u003eis_write) {\n            nvme_addr_read(n, mptr, meta_buf, meta_size);\n\n            rc \u003d nvme_meta_set(n, slba, meta_buf, meta_size, ms);\n            if (rc) {\n                printf(\"nvme_rw: set meta status failed\\n\");\n                goto free_meta_buf;\n            }\n        } else {\n            rc \u003d nvme_meta_get(n, slba, meta_buf, meta_size, ms);\n            if (rc) {\n                printf(\"nvme_rw: get meta status failed\\n\");\n                goto free_meta_buf;\n            }\n\n            nvme_addr_write(n, mptr, meta_buf, meta_size);\n        }\n    }\n    //...\n    req-\u003ehas_sg \u003d true;\n\nIf any of the gotos under the if (mptr) are hit, the sglist allocated by nvme_map_prp is not freed. We should propaly move this code to be executed before calling nvme_map_prp.",
+      "range": {
+        "startLine": 729,
+        "startChar": 0,
+        "endLine": 729,
+        "endChar": 27
+      },
+      "revId": "94f88939bd19f960e642de339e6cd169f99aa35b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
