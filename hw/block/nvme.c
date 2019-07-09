@@ -773,7 +773,7 @@ static uint16_t nvme_rw(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
         goto free_meta_buf;
     }
 
-    if (mptr) {
+    if (mptr && meta_buf) {
         if (req->is_write) {
             nvme_addr_read(n, mptr, meta_buf, meta_size);
 
