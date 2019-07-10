@@ -273,6 +273,14 @@ static int lnvm_meta_state_set(NvmeNamespace *ns, uint64_t ppa,
     return 0;
 }
 
+static inline uint64_t lnvm_chunk_no_to_lba(LnvmCtrl *ln, uint64_t chunk_no)
+{
+    uint64_t blk = chunk_no % ln->params.blks_per_pln;
+    uint64_t lun = chunk_no / ln->params.blks_per_pln;
+
+    return (lun << ln->ppaf.lun_offset) + (blk << ln->ppaf.blk_offset);
+}
+
 static inline int64_t lnvm_lba_to_chnk_no(LnvmCtrl *ln, uint64_t lba)
 {
     //uint64_t ch = (lba & ln->ppaf.ch_mask) >> ln->ppaf.ch_offset;
@@ -450,7 +458,7 @@ static void *lnvm_te_thread(void *arg)
         while (true) {
             cnt = rand() % total_chunks;
             chunk_state = ln->chunk_state[cnt].state;
-            ppa = cnt << ln->ppaf.blk_offset;
+            ppa = lnvm_chunk_no_to_lba(ln, cnt);
             if (chunk_state == LNVM_CHNK_FULL || chunk_state == LNVM_CHNK_OPEN) {
                 int scope = rand() % 3 ? LNVM_LOGPAGE_SCOPE_CHUNK :
                             LNVM_LOGPAGE_SCOPE_SECTOR;
