@@ -22,6 +22,30 @@
       "revId": "110b747efb4d21ccd5d96a6b74d4fcbc3a7ac98d",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae2b1fed_3cba5552",
+        "filename": "hw/block/nvme_lnvm_helpers.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1015371
+      },
+      "writtenOn": "2019-07-10T12:02:24Z",
+      "side": 1,
+      "message": "printf(\"nvme: Only 1 channel is supported at the moment\\n\");",
+      "parentUuid": "6c5ea3c4_facc01bc",
+      "range": {
+        "startLine": 279,
+        "startChar": 13,
+        "endLine": 279,
+        "endChar": 17
+      },
+      "revId": "110b747efb4d21ccd5d96a6b74d4fcbc3a7ac98d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
     }
   ]
 }
