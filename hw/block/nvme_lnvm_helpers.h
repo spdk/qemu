@@ -1187,7 +1187,7 @@ static int lnvm_init_chunk_state(NvmeCtrl *n)
             }
         }
 
-        ppa = i << ln->ppaf.blk_offset;
+        ppa = lnvm_chunk_no_to_lba(ln, i);
         if (written == sec_per_chunk) {
             ln->chunk_state[i].state = LNVM_CHNK_FULL;
         } else if (written != 0) {
