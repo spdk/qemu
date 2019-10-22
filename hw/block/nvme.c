@@ -2538,10 +2538,6 @@ static void nvme_exit(PCIDevice *pci_dev)
     g_free(n->sq);
 
     msix_uninit_exclusive_bar(pci_dev);
-    memory_region_unref(&n->iomem);
-    if (n->cmbsz) {
-        memory_region_unref(&n->ctrl_mem);
-    }
 
     if (lnvm_dev(n)) {
         lnvm_exit(n);
