@@ -1688,7 +1688,13 @@ static void nvme_partition_ns(NvmeNamespace *ns, uint8_t lba_idx)
 
 static void nvme_ns_data_save(NvmeCtrl *n)
 {
-    FILE *f = fopen(n->ns_data_fname, "w+b");
+    FILE *f = NULL;
+
+    if (n->ns_data_fname == NULL) {
+        return;
+    }
+
+    f = fopen(n->ns_data_fname, "w+b");
 
     if (f) {
         int i;
@@ -2317,6 +2323,7 @@ static void nvme_ns_data_load(NvmeCtrl *n)
     int i;
     int data_size_per_ns = 1;
     int file_size = data_size_per_ns * n->num_namespaces;
+    FILE *f = NULL;
     char *buf = malloc(file_size);
     if (!buf) {
         goto error_malloc;
@@ -2332,7 +2339,11 @@ static void nvme_ns_data_load(NvmeCtrl *n)
         return;
 	}
 
-    FILE *f = fopen(n->ns_data_fname, "r+b");
+    if (n->ns_data_fname == NULL) {
+        goto error_io;
+    }
+
+    f = fopen(n->ns_data_fname, "r+b");
     if (!f) {
         goto error_io;
     }
