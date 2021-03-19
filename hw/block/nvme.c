@@ -529,7 +529,7 @@ static void nvme_enqueue_event(NvmeCtrl *n, uint8_t event_type,
 
     qemu_mutex_lock(&n->enq_evt_mutex);
 
-    if (!(n->bar.csts & NVME_CSTS_READY)) {
+    if (!(n->bar.csts & NVME_CSTS_READY) || !n->aer_timer) {
         qemu_mutex_unlock(&n->enq_evt_mutex);
         return;
     }
