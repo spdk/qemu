@@ -646,7 +646,7 @@ static uint16_t nvme_write_zeros(NvmeCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd,
     const uint16_t ms = ns->id_ns.lbaf[lba_index].ms;
     uint64_t slba = le64_to_cpu(rw->slba);
     uint32_t nlb  = le16_to_cpu(rw->nlb) + 1;
-    uint64_t offset = slba << data_shift;
+    uint64_t offset = ns->start_block + (slba << data_shift);
     uint32_t count = nlb << data_shift;
     uint64_t meta_size = nlb * ms;
     uint8_t *meta_buf = NULL;
